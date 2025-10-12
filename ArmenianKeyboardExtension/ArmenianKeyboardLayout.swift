@@ -15,6 +15,7 @@ enum KeyType {
     case space
     case `return`
     case numbers
+    case emoji
 }
 
 struct KeyboardKey {
@@ -88,13 +89,13 @@ class ArmenianKeyboardLayout {
             return [
                 KeyboardKey(type: .numbers, displayText: "ԱԲԳ", width: .wide),
                 KeyboardKey(type: .space, displayText: "space", width: .extraWide),
-                KeyboardKey(type: .return, displayText: "return", width: .wide)
+                KeyboardKey(type: .return, displayText: "⏎", width: .wide)
             ]
         } else {
             return [
                 KeyboardKey(type: .numbers, displayText: "123", width: .wide),
                 KeyboardKey(type: .space, displayText: "space", width: .extraWide),
-                KeyboardKey(type: .return, displayText: "return", width: .wide)
+                KeyboardKey(type: .return, displayText: "⏎", width: .wide)
             ]
         }
     }

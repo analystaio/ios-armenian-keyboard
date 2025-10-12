@@ -25,6 +25,11 @@ class ArmenianKeyboardView: UIView {
     private let rowSpacing: CGFloat = 12
     private let horizontalPadding: CGFloat = 3
 
+    private var deleteTimer: Timer?
+    private var deleteButton: UIButton?
+    private var isDeleteButtonHeld = false
+    private var shiftButton: UIButton?
+
     // MARK: - Initialization
     init(layout: ArmenianKeyboardLayout) {
         self.layout = layout
@@ -112,10 +117,14 @@ class ArmenianKeyboardView: UIView {
     }
 
     private func createBottomRow() -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+
         let rowView = UIStackView()
         rowView.axis = .horizontal
         rowView.spacing = keySpacing
         rowView.distribution = .fill
+        rowView.translatesAutoresizingMaskIntoConstraints = false
 
         let keys = layout.getBottomRow(numbersMode: isNumbersMode)
 
@@ -135,7 +144,18 @@ class ArmenianKeyboardView: UIView {
             }
         }
 
-        return rowView
+        containerView.addSubview(rowView)
+
+        // Add padding to center the bottom row
+        let sidePadding: CGFloat = 3
+        NSLayoutConstraint.activate([
+            rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: sidePadding),
+            rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -sidePadding),
+            rowView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            rowView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
+
+        return containerView
     }
 
     private func createKeyButton(for key: KeyboardKey) -> UIButton {
@@ -150,11 +170,24 @@ class ArmenianKeyboardView: UIView {
             if case .character = key.type, (isShifted || isCapsLocked) {
                 displayText = layout.uppercased(displayText)
             }
+            // Update shift symbol based on state
+            if case .shift = key.type {
+                if isCapsLocked {
+                    displayText = "⇪"  // Caps lock symbol
+                } else {
+                    displayText = "⇧"  // Regular shift symbol
+                }
+            }
             button.setTitle(displayText, for: .normal)
         }
 
         // Styling to match iOS keyboard
-        button.titleLabel?.font = .systemFont(ofSize: 22, weight: .regular)
+        // Smaller font for numbers button
+        if case .numbers = key.type {
+            button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
+        } else {
+            button.titleLabel?.font = .systemFont(ofSize: 22, weight: .regular)
+        }
 
         // Text color - all keys use standard label color
         button.setTitleColor(.label, for: .normal)
@@ -172,6 +205,20 @@ class ArmenianKeyboardView: UIView {
         button.addTarget(self, action: #selector(keyPressed(_:)), for: .touchDown)
         button.addTarget(self, action: #selector(keyReleased(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
 
+        // For delete key, add long press support
+        if case .delete = key.type {
+            deleteButton = button
+        }
+
+        // For shift key, track it and highlight when active
+        if case .shift = key.type {
+            shiftButton = button
+            // Highlight if shift or caps lock is active
+            if isShifted || isCapsLocked {
+                button.backgroundColor = UIColor(hex: "#8b8b8b")
+            }
+        }
+
         // Store key data
         button.tag = keyButtons.count
 
@@ -179,36 +226,12 @@ class ArmenianKeyboardView: UIView {
     }
 
     private func getKeyBackgroundColor(for keyType: KeyType) -> UIColor {
-        if #available(iOS 13.0, *) {
-            switch keyType {
-            case .character, .space:
-                // Light gray keys like native keyboard
-                return UIColor { traitCollection in
-                    traitCollection.userInterfaceStyle == .dark
-                        ? UIColor(white: 0.35, alpha: 1.0)
-                        : UIColor(white: 0.98, alpha: 1.0)
-                }
-            case .shift, .delete, .numbers, .return:
-                // Darker gray for special keys
-                return UIColor { traitCollection in
-                    traitCollection.userInterfaceStyle == .dark
-                        ? UIColor(white: 0.28, alpha: 1.0)
-                        : UIColor(white: 0.72, alpha: 1.0)
-                }
-            case .globe:
-                return UIColor { traitCollection in
-                    traitCollection.userInterfaceStyle == .dark
-                        ? UIColor(white: 0.28, alpha: 1.0)
-                        : UIColor(white: 0.72, alpha: 1.0)
-                }
-            }
-        } else {
-            switch keyType {
-            case .character, .space:
-                return UIColor(white: 0.98, alpha: 1.0)
-            case .shift, .delete, .numbers, .globe, .return:
-                return UIColor(white: 0.72, alpha: 1.0)
-            }
+        // Special keys use darker color
+        switch keyType {
+        case .shift, .delete, .numbers, .emoji, .return:
+            return UIColor(hex: "#464646")
+        case .character, .space, .globe:
+            return UIColor(hex: "#6b6b6b")
         }
     }
 
@@ -218,6 +241,12 @@ class ArmenianKeyboardView: UIView {
         guard sender.tag < keys.count else { return }
 
         let key = keys[sender.tag]
+
+        // Skip delete key - it's handled in keyPressed for instant response
+        if case .delete = key.type {
+            return
+        }
+
         delegate?.didTapKey(key)
     }
 
@@ -225,11 +254,36 @@ class ArmenianKeyboardView: UIView {
         UIView.animate(withDuration: 0.05) {
             sender.alpha = 0.3
         }
+
+        // If delete key, delete immediately and schedule continuous deletion
+        if sender == deleteButton {
+            isDeleteButtonHeld = true
+
+            // Delete immediately on press
+            delegate?.didTapKey(KeyboardKey(type: .delete, displayText: "⌫", width: .wide))
+
+            // Start timer after 0.5 second delay for continuous deletion
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self, self.isDeleteButtonHeld, self.deleteTimer == nil else { return }
+
+                // Start repeating timer
+                self.deleteTimer = Timer.scheduledTimer(withTimeInterval: 0.06, repeats: true) { [weak self] _ in
+                    self?.delegate?.didTapKey(KeyboardKey(type: .delete, displayText: "⌫", width: .wide))
+                }
+            }
+        }
     }
 
     @objc private func keyReleased(_ sender: UIButton) {
         UIView.animate(withDuration: 0.05) {
             sender.alpha = 1.0
+        }
+
+        // If delete button, stop continuous deletion
+        if sender == deleteButton {
+            isDeleteButtonHeld = false
+            deleteTimer?.invalidate()
+            deleteTimer = nil
         }
     }
 

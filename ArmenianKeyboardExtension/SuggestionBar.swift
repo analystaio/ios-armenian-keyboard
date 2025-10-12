@@ -28,16 +28,8 @@ class SuggestionBar: UIView {
 
     // MARK: - Setup
     private func setup() {
-        // Match iOS suggestion bar background
-        if #available(iOS 13.0, *) {
-            backgroundColor = UIColor { traitCollection in
-                traitCollection.userInterfaceStyle == .dark
-                    ? UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha: 1.0)
-                    : UIColor(red: 0.82, green: 0.84, blue: 0.86, alpha: 1.0)
-            }
-        } else {
-            backgroundColor = UIColor(red: 0.82, green: 0.84, blue: 0.86, alpha: 1.0)
-        }
+        // Custom background color
+        backgroundColor = UIColor(hex: "#2B2B2B")
 
         // Setup stack view
         stackView.axis = .horizontal
