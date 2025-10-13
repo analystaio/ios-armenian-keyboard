@@ -131,9 +131,17 @@ class KeyboardViewController: UIInputViewController {
     private func updateSuggestions() {
         print("DEBUG: updateSuggestions() called")
 
+        // Check if document is completely empty (all text deleted)
+        let documentContext = textDocumentProxy.documentContextBeforeInput
+        if documentContext != nil && documentContext!.isEmpty {
+            print("DEBUG: Document is empty - clearing suggestions")
+            suggestionBar.updateSuggestions([])
+            return
+        }
+
         guard let currentWord = getCurrentWord() else {
             print("DEBUG: getCurrentWord() returned nil - not clearing suggestions")
-            // Don't clear suggestions when there's no context (e.g., empty text field)
+            // Don't clear suggestions when there's no context (e.g., just opened keyboard)
             return
         }
 
