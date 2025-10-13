@@ -18,6 +18,9 @@
 		AA0000230000000000000001 /* ArmenianDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000240000000000000001 /* ArmenianDictionary.swift */; };
 		AA0000250000000000000001 /* ArmenianKeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA0000260000000000000001 /* ArmenianKeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		AA0000ASSETSBUILD0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000ASSETS0000000000001 /* Assets.xcassets */; };
+		BB5729B0CEB46F44289702E2 /* BigramDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */; };
+		NBFE47B040DD9E448FB8F2C7 /* NGramPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */; };
+		CB5DE26F4A961B44AAA15AD9 /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6963DE9C816940449A5A56 /* ContextTracker.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,6 +62,9 @@
 		AA0000260000000000000001 /* ArmenianKeyboardExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ArmenianKeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000310000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA0000ASSETS0000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigramDictionary.swift; sourceTree = "<group>"; };
+		NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NGramPredictor.swift; sourceTree = "<group>"; };
+		CF6963DE9C816940449A5A56 /* ContextTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextTracker.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,6 +115,9 @@
 				AA0000200000000000000001 /* Trie.swift */,
 				AA0000220000000000000001 /* ArmenianWordPredictor.swift */,
 				AA0000240000000000000001 /* ArmenianDictionary.swift */,
+				BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */,
+				NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */,
+				CF6963DE9C816940449A5A56 /* ContextTracker.swift */,
 				AA0000310000000000000001 /* Info.plist */,
 			);
 			path = ArmenianKeyboardExtension;
@@ -238,6 +247,9 @@
 				AA0000190000000000000001 /* Trie.swift in Sources */,
 				AA0000210000000000000001 /* ArmenianWordPredictor.swift in Sources */,
 				AA0000230000000000000001 /* ArmenianDictionary.swift in Sources */,
+				BB5729B0CEB46F44289702E2 /* BigramDictionary.swift in Sources */,
+				NBFE47B040DD9E448FB8F2C7 /* NGramPredictor.swift in Sources */,
+				CB5DE26F4A961B44AAA15AD9 /* ContextTracker.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

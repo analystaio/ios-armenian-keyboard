@@ -34,6 +34,8 @@ class KeyboardViewController: UIInputViewController {
     private var suggestionBar: SuggestionBar!
     private let armenianLayout = ArmenianKeyboardLayout()
     private let wordPredictor = ArmenianWordPredictor()
+    private let ngramPredictor = NGramPredictor()
+    private let contextTracker = ContextTracker()
     private var isShifted = false
     private var isCapsLocked = false
     private var isNumbersMode = false
@@ -139,30 +141,26 @@ class KeyboardViewController: UIInputViewController {
             return
         }
 
-        guard let currentWord = getCurrentWord() else {
-            print("DEBUG: getCurrentWord() returned nil - not clearing suggestions")
-            // Don't clear suggestions when there's no context (e.g., just opened keyboard)
-            return
+        var suggestions: [String] = []
+
+        // Scenario 1: User is typing a word (prefix completion)
+        if let currentWord = getCurrentWord(), !currentWord.isEmpty {
+            print("DEBUG: Scenario 1 - Prefix completion for '\(currentWord)'")
+            suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
+            print("DEBUG: Got \(suggestions.count) prefix suggestions: \(suggestions)")
         }
-
-        print("DEBUG: currentWord = '\(currentWord)' (length: \(currentWord.count))")
-
-        // Only get suggestions if the word is at least 1 character
-        guard !currentWord.isEmpty else {
-            print("DEBUG: currentWord is empty - clearing suggestions")
-            suggestionBar.updateSuggestions([])
-            return
+        // Scenario 2: User just finished a word (next word prediction)
+        else if let lastWord = contextTracker.getLastWord() {
+            print("DEBUG: Scenario 2 - Next word prediction after '\(lastWord)'")
+            suggestions = ngramPredictor.predictNext(after: lastWord, limit: 3)
+            print("DEBUG: Got \(suggestions.count) next word predictions: \(suggestions)")
         }
-
-        print("DEBUG: Calling wordPredictor.getSuggestions(for: '\(currentWord)')")
-        let suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
-        print("DEBUG: Got \(suggestions.count) suggestions: \(suggestions)")
+        else {
+            print("DEBUG: No current word and no context - clearing suggestions")
+        }
 
         suggestionBar.updateSuggestions(suggestions)
-        print("DEBUG: Updated suggestion bar with suggestions")
-
-        // Debug: print to console
-        print("Current word: '\(currentWord)', Suggestions: \(suggestions)")
+        print("DEBUG: Updated suggestion bar with \(suggestions.count) suggestions")
     }
 
     private func getCurrentWord() -> String? {
@@ -204,6 +202,12 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             let output = isShifted || isCapsLocked ? char.uppercased() : char.lowercased()
             textDocumentProxy.insertText(output)
 
+            // Clear context on sentence boundaries (., !, ?, ։)
+            if ContextTracker.isSentenceBoundary(char) {
+                contextTracker.clear()
+                print("DEBUG: Sentence boundary detected, context cleared")
+            }
+
             // Reset shift if not caps locked
             if isShifted && !isCapsLocked {
                 isShifted = false
@@ -226,15 +230,22 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             advanceToNextInputMode()
 
         case .space:
+            // Add current word to context before inserting space
+            if let currentWord = getCurrentWord(), !currentWord.isEmpty {
+                contextTracker.addWord(currentWord)
+                print("DEBUG: Added '\(currentWord)' to context")
+            }
+
             textDocumentProxy.insertText(" ")
 
-            // Clear suggestions after space
-            suggestionBar.updateSuggestions([])
+            // Show next word predictions after space
+            updateSuggestions()
 
         case .return:
             textDocumentProxy.insertText("\n")
 
-            // Clear suggestions after return
+            // Clear context and suggestions after return (new line = new sentence)
+            contextTracker.clear()
             suggestionBar.updateSuggestions([])
 
         case .numbers:
