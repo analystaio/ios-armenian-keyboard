@@ -17,6 +17,7 @@
 		AA0000210000000000000001 /* ArmenianWordPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000220000000000000001 /* ArmenianWordPredictor.swift */; };
 		AA0000230000000000000001 /* ArmenianDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000240000000000000001 /* ArmenianDictionary.swift */; };
 		AA0000250000000000000001 /* ArmenianKeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = AA0000260000000000000001 /* ArmenianKeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		AA0000ASSETSBUILD0000001 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AA0000ASSETS0000000000001 /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 		AA0000240000000000000001 /* ArmenianDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArmenianDictionary.swift; sourceTree = "<group>"; };
 		AA0000260000000000000001 /* ArmenianKeyboardExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ArmenianKeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000310000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AA0000ASSETS0000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +93,7 @@
 			children = (
 				AA0000020000000000000001 /* ArmenianKeyboardApp.swift */,
 				AA0000040000000000000001 /* ContentView.swift */,
+				AA0000ASSETS0000000000001 /* Assets.xcassets */,
 				AA0000060000000000000001 /* Info.plist */,
 			);
 			path = ArmenianKeyboard;
@@ -201,6 +204,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA0000ASSETSBUILD0000001 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
