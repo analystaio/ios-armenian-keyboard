@@ -56,24 +56,13 @@ class SuggestionBar: UIView {
     private func createSuggestionButton(tag: Int) -> UIButton {
         let button = UIButton(type: .system)
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .regular)
-        button.setTitleColor(.label, for: .normal)
+        button.setTitleColor(.white, for: .normal)
         button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         button.tag = tag
         button.addTarget(self, action: #selector(suggestionTapped(_:)), for: .touchUpInside)
 
-        // Match iOS suggestion button background
-        if #available(iOS 13.0, *) {
-            button.backgroundColor = UIColor { traitCollection in
-                traitCollection.userInterfaceStyle == .dark
-                    ? UIColor(white: 0.22, alpha: 1.0)
-                    : UIColor.white
-            }
-        } else {
-            button.backgroundColor = .white
-        }
-
-        button.layer.cornerRadius = 6
-        button.clipsToBounds = true
+        // Remove background color - transparent
+        button.backgroundColor = .clear
 
         return button
     }
@@ -83,16 +72,12 @@ class SuggestionBar: UIView {
         guard let title = sender.title(for: .normal) else { return }
         onSuggestionTapped?(title)
 
-        // Visual feedback
+        // Visual feedback with opacity change instead of background color
         UIView.animate(withDuration: 0.1, animations: {
-            sender.backgroundColor = .systemGray4
+            sender.alpha = 0.5
         }) { _ in
             UIView.animate(withDuration: 0.1) {
-                if #available(iOS 13.0, *) {
-                    sender.backgroundColor = .systemBackground
-                } else {
-                    sender.backgroundColor = .white
-                }
+                sender.alpha = 1.0
             }
         }
     }

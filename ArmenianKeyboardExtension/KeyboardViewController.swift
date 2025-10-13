@@ -42,11 +42,43 @@ class KeyboardViewController: UIInputViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupKeyboard()
+
+        // TEST: Comprehensive debug test
+        print("===== COMPREHENSIVE TEST START =====")
+        print("Testing Trie directly...")
+        let testTrie = Trie()
+        testTrie.insert("ես", frequency: 100)
+        testTrie.insert("երեխա", frequency: 90)
+        testTrie.insert("եղել", frequency: 85)
+        let trieResults = testTrie.findWordsWithPrefix("ե", limit: 3)
+        print("Direct Trie test for 'ե': \(trieResults)")
+
+        print("\nTesting word predictor...")
+        let predictorResults = wordPredictor.getSuggestions(for: "ե", limit: 3)
+        print("Word predictor test for 'ե': \(predictorResults)")
+
+        print("\nTesting with uppercase...")
+        let uppercaseResults = wordPredictor.getSuggestions(for: "Ե", limit: 3)
+        print("Word predictor test for 'Ե': \(uppercaseResults)")
+
+        print("===== COMPREHENSIVE TEST END =====")
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateKeyboardAppearance()
+
+        // TEST: Verify word predictor works
+        print("DEBUG: viewWillAppear - testing word predictor")
+        let testSuggestions = wordPredictor.getSuggestions(for: "ե", limit: 3)
+        print("DEBUG: Test suggestions for 'ե': \(testSuggestions)")
+
+        // Show initial suggestions
+        if testSuggestions.isEmpty {
+            suggestionBar.updateSuggestions(["բարև", "ողջույն", "շնորհակալ"])
+        } else {
+            suggestionBar.updateSuggestions(testSuggestions)
+        }
     }
 
     override func textWillChange(_ textInput: UITextInput?) {
@@ -55,6 +87,8 @@ class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
+        print("DEBUG: textDidChange called")
+        print("DEBUG: documentContextBeforeInput = '\(textDocumentProxy.documentContextBeforeInput ?? "nil")'")
         updateSuggestions()
     }
 
@@ -95,19 +129,29 @@ class KeyboardViewController: UIInputViewController {
 
     // MARK: - Suggestions
     private func updateSuggestions() {
+        print("DEBUG: updateSuggestions() called")
+
         guard let currentWord = getCurrentWord() else {
-            suggestionBar.updateSuggestions([])
+            print("DEBUG: getCurrentWord() returned nil - not clearing suggestions")
+            // Don't clear suggestions when there's no context (e.g., empty text field)
             return
         }
+
+        print("DEBUG: currentWord = '\(currentWord)' (length: \(currentWord.count))")
 
         // Only get suggestions if the word is at least 1 character
         guard !currentWord.isEmpty else {
+            print("DEBUG: currentWord is empty - clearing suggestions")
             suggestionBar.updateSuggestions([])
             return
         }
 
+        print("DEBUG: Calling wordPredictor.getSuggestions(for: '\(currentWord)')")
         let suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
+        print("DEBUG: Got \(suggestions.count) suggestions: \(suggestions)")
+
         suggestionBar.updateSuggestions(suggestions)
+        print("DEBUG: Updated suggestion bar with suggestions")
 
         // Debug: print to console
         print("Current word: '\(currentWord)', Suggestions: \(suggestions)")
@@ -115,11 +159,16 @@ class KeyboardViewController: UIInputViewController {
 
     private func getCurrentWord() -> String? {
         guard let documentContext = textDocumentProxy.documentContextBeforeInput else {
+            print("DEBUG: getCurrentWord() - documentContextBeforeInput is nil")
             return nil
         }
 
+        print("DEBUG: getCurrentWord() - documentContext = '\(documentContext)'")
         let components = documentContext.components(separatedBy: .whitespacesAndNewlines)
-        return components.last?.isEmpty == false ? components.last : nil
+        print("DEBUG: getCurrentWord() - components = \(components)")
+        let lastComponent = components.last?.isEmpty == false ? components.last : nil
+        print("DEBUG: getCurrentWord() - returning '\(lastComponent ?? "nil")'")
+        return lastComponent
     }
 
     private func insertSuggestion(_ suggestion: String) {
@@ -153,8 +202,14 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
                 keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
             }
 
+            // Update suggestions after inserting character
+            updateSuggestions()
+
         case .delete:
             textDocumentProxy.deleteBackward()
+
+            // Update suggestions after deleting character
+            updateSuggestions()
 
         case .shift:
             handleShift()
@@ -165,8 +220,14 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
         case .space:
             textDocumentProxy.insertText(" ")
 
+            // Clear suggestions after space
+            suggestionBar.updateSuggestions([])
+
         case .return:
             textDocumentProxy.insertText("\n")
+
+            // Clear suggestions after return
+            suggestionBar.updateSuggestions([])
 
         case .numbers:
             toggleNumbersMode()
