@@ -241,10 +241,8 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             toggleNumbersMode()
 
         case .emoji:
-            // Open emoji keyboard
-            if #available(iOS 10.0, *) {
-                performSelector(inBackground: #selector(advanceToNextInputMode), with: nil)
-            }
+            // Switch to system emoji keyboard
+            advanceToNextInputMode()
         }
     }
 

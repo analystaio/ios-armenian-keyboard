@@ -34,7 +34,7 @@ class SuggestionBar: UIView {
         // Setup stack view
         stackView.axis = .horizontal
         stackView.distribution = .fillEqually
-        stackView.spacing = 0.5
+        stackView.spacing = 0
         stackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(stackView)
 
@@ -63,6 +63,25 @@ class SuggestionBar: UIView {
 
         // Remove background color - transparent
         button.backgroundColor = .clear
+
+        // Add divider line on the right side (except for last button)
+        if tag < 2 {
+            button.layer.borderWidth = 0
+            button.layer.borderColor = UIColor.clear.cgColor
+
+            // Add a thin divider line on the right
+            let divider = UIView()
+            divider.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+            divider.translatesAutoresizingMaskIntoConstraints = false
+            button.addSubview(divider)
+
+            NSLayoutConstraint.activate([
+                divider.trailingAnchor.constraint(equalTo: button.trailingAnchor),
+                divider.topAnchor.constraint(equalTo: button.topAnchor, constant: 8),
+                divider.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: -8),
+                divider.widthAnchor.constraint(equalToConstant: 0.5)
+            ])
+        }
 
         return button
     }

@@ -164,9 +164,18 @@ class ArmenianKeyboardView: UIView {
     private func createKeyButton(for key: KeyboardKey) -> UIButton {
         let button = UIButton(type: .system)
 
-        // Set display text
+        // Set display text or image
         if case .space = key.type {
             button.setTitle("", for: .normal)
+        } else if case .emoji = key.type {
+            // Use SF Symbol for emoji button (black and white)
+            if let emojiImage = UIImage(systemName: "face.smiling")?.withRenderingMode(.alwaysTemplate) {
+                button.setImage(emojiImage, for: .normal)
+                button.tintColor = .label
+            } else {
+                // Fallback to simple text if SF Symbol not available
+                button.setTitle("☺︎", for: .normal)
+            }
         } else {
             var displayText = key.displayText
             // Apply shift/caps if it's a character
@@ -188,16 +197,19 @@ class ArmenianKeyboardView: UIView {
         // Smaller font for numbers button
         if case .numbers = key.type {
             button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
+        } else if case .emoji = key.type {
+            // No font setting needed for image
         } else {
             button.titleLabel?.font = .systemFont(ofSize: 22, weight: .regular)
         }
 
-        // Text color - all keys use standard label color
+        // Text/image color - all keys use standard label color
         button.setTitleColor(.label, for: .normal)
+        button.tintColor = .label
 
         // Background styling - match iOS appearance
         button.backgroundColor = getKeyBackgroundColor(for: key.type)
-        button.layer.cornerRadius = 8
+        button.layer.cornerRadius = 5
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOffset = CGSize(width: 0, height: 1)
         button.layer.shadowOpacity = 0.15
