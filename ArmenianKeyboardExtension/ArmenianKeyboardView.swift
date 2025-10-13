@@ -71,6 +71,9 @@ class ArmenianKeyboardView: UIView {
         // Row 3
         stackView.addArrangedSubview(createRow(2))
 
+        // Row 4 - Additional letters
+        stackView.addArrangedSubview(createRow(3))
+
         // Bottom row
         stackView.addArrangedSubview(createBottomRow())
     }
@@ -311,7 +314,7 @@ class ArmenianKeyboardView: UIView {
     private func getAllKeys() -> [KeyboardKey] {
         var allKeys: [KeyboardKey] = []
 
-        for i in 0..<3 {
+        for i in 0..<4 {
             allKeys.append(contentsOf: layout.getKeys(forRow: i, numbersMode: isNumbersMode))
         }
 

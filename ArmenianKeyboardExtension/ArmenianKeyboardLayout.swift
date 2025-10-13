@@ -36,12 +36,14 @@ class ArmenianKeyboardLayout {
     // Based on standard Eastern Armenian keyboard layout
 
     let letterRows: [[String]] = [
-        // Row 1
-        ["ք", "փ", "ե", "ր", "տ", "ը", "ւ", "ի", "ո", "պ"],
+        // Row 1 - Standard Eastern Armenian layout
+        ["է", "թ", "փ", "ձ", "ջ", "ր", "չ", "ճ", "ժ", "ծ"],
         // Row 2
-        ["ա", "ս", "դ", "ֆ", "գ", "հ", "ջ", "կ", "լ"],
+        ["ք", "ո", "ե", "ռ", "տ", "ը", "ւ", "ի", "օ", "պ"],
         // Row 3
-        ["զ", "խ", "ծ", "վ", "բ", "ն", "մ", "շ", "ղ", "ճ"]
+        ["ա", "ս", "դ", "ֆ", "գ", "հ", "յ", "կ", "լ", "խ"],
+        // Row 4
+        ["զ", "ղ", "ց", "վ", "բ", "ն", "մ", "շ"]
     ]
 
     let numberRows: [[String]] = [
@@ -60,8 +62,8 @@ class ArmenianKeyboardLayout {
 
         let rowChars = sourceRows[row]
 
-        // Add special keys for row 2 (shift on left)
-        if row == 2 {
+        // Add special keys for row 3 (the 4th row - shift on left, delete on right)
+        if row == 3 {
             var keys: [KeyboardKey] = []
 
             // Shift key
@@ -110,7 +112,7 @@ class ArmenianKeyboardLayout {
             "յ": "Յ", "ն": "Ն", "շ": "Շ", "ո": "Ո", "չ": "Չ",
             "պ": "Պ", "ջ": "Ջ", "ռ": "Ռ", "ս": "Ս", "վ": "Վ",
             "տ": "Տ", "ր": "Ր", "ց": "Ց", "ւ": "Ւ", "փ": "Փ",
-            "ք": "Ք", "օ": "Օ", "ֆ": "Ֆ", "ու": "ՈՒ"
+            "ք": "Ք", "օ": "Օ", "ֆ": "Ֆ", "և": "ԵՒ"
         ]
 
         return lowercaseToUppercase[char] ?? char.uppercased()
