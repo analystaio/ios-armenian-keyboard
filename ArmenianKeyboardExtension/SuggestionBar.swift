@@ -54,15 +54,15 @@ class SuggestionBar: UIView {
     }
 
     private func createSuggestionButton(tag: Int) -> UIButton {
-        let button = UIButton(type: .system)
+        var configuration = UIButton.Configuration.plain()
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+        configuration.baseForegroundColor = .white
+        configuration.background.backgroundColor = .clear
+
+        let button = UIButton(configuration: configuration)
         button.titleLabel?.font = .systemFont(ofSize: 15, weight: .regular)
-        button.setTitleColor(.white, for: .normal)
-        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 12, bottom: 8, right: 12)
         button.tag = tag
         button.addTarget(self, action: #selector(suggestionTapped(_:)), for: .touchUpInside)
-
-        // Remove background color - transparent
-        button.backgroundColor = .clear
 
         // Add divider line on the right side (except for last button)
         if tag < 2 {
