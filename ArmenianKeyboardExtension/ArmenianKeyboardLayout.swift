@@ -62,14 +62,17 @@ class ArmenianKeyboardLayout {
 
         let rowChars = sourceRows[row]
 
-        // Add special keys for row 3 (the 4th row - shift on left, delete on right)
-        if row == 3 {
+        // In letter mode: row 3 (4th row) has shift and delete
+        // In numbers mode: row 2 (3rd row) has shift and delete
+        let isLastCharacterRow = numbersMode ? (row == 2) : (row == 3)
+
+        if isLastCharacterRow {
             var keys: [KeyboardKey] = []
 
             // Shift key
             keys.append(KeyboardKey(type: .shift, displayText: "⇧", width: .wide))
 
-            // Letter keys
+            // Character keys
             for char in rowChars {
                 keys.append(KeyboardKey(type: .character(char), displayText: char, width: .standard))
             }

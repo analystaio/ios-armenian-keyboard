@@ -74,8 +74,10 @@ class ArmenianKeyboardView: UIView {
         // Row 3
         stackView.addArrangedSubview(createRow(2))
 
-        // Row 4 - Additional letters
-        stackView.addArrangedSubview(createRow(3))
+        // Row 4 - Additional letters (only in letter mode, not in numbers mode)
+        if !isNumbersMode {
+            stackView.addArrangedSubview(createRow(3))
+        }
 
         // Bottom row
         stackView.addArrangedSubview(createBottomRow())
