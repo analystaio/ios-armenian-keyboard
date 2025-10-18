@@ -101,23 +101,13 @@ class ArmenianKeyboardView: UIView {
 
         containerView.addSubview(rowView)
 
-        // For row 2 (index 1), which has 9 keys, add padding to center it
-        if rowIndex == 1 {
-            let sidePadding: CGFloat = 15 // Half a key width approximately
-            NSLayoutConstraint.activate([
-                rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: sidePadding),
-                rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -sidePadding),
-                rowView.topAnchor.constraint(equalTo: containerView.topAnchor),
-                rowView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-            ])
-        } else {
-            NSLayoutConstraint.activate([
-                rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-                rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-                rowView.topAnchor.constraint(equalTo: containerView.topAnchor),
-                rowView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
-            ])
-        }
+        // All rows extend the full width
+        NSLayoutConstraint.activate([
+            rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            rowView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            rowView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+        ])
 
         return containerView
     }
