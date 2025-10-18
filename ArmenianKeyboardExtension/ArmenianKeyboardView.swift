@@ -269,17 +269,9 @@ class ArmenianKeyboardView: UIView {
     }
 
     @objc private func keyPressed(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.05) {
-            sender.alpha = 0.3
-        }
-
-        // Show popup with the key's text
-        if let text = sender.currentTitle, !text.isEmpty {
-            showKeyPopup(for: sender, with: text)
-        }
-
-        // If delete key, delete immediately and schedule continuous deletion
+        // If delete key, handle it immediately for instant response
         if sender == deleteButton {
+            sender.alpha = 0.3
             isDeleteButtonHeld = true
 
             // Delete immediately on press
@@ -294,6 +286,17 @@ class ArmenianKeyboardView: UIView {
                     self?.delegate?.didTapKey(KeyboardKey(type: .delete, displayText: "⌫", width: .wide))
                 }
             }
+            return
+        }
+
+        // For other keys, show visual feedback
+        UIView.animate(withDuration: 0.05) {
+            sender.alpha = 0.3
+        }
+
+        // Show popup with the key's text
+        if let text = sender.currentTitle, !text.isEmpty {
+            showKeyPopup(for: sender, with: text)
         }
     }
 
