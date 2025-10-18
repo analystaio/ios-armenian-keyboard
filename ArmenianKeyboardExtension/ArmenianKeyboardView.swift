@@ -30,6 +30,9 @@ class ArmenianKeyboardView: UIView {
     private var isDeleteButtonHeld = false
     private var shiftButton: UIButton?
 
+    // Key popup
+    private var keyPopupView: UIView?
+
     // MARK: - Initialization
     init(layout: ArmenianKeyboardLayout) {
         self.layout = layout
@@ -270,6 +273,11 @@ class ArmenianKeyboardView: UIView {
             sender.alpha = 0.3
         }
 
+        // Show popup with the key's text
+        if let text = sender.currentTitle, !text.isEmpty {
+            showKeyPopup(for: sender, with: text)
+        }
+
         // If delete key, delete immediately and schedule continuous deletion
         if sender == deleteButton {
             isDeleteButtonHeld = true
@@ -293,6 +301,9 @@ class ArmenianKeyboardView: UIView {
         UIView.animate(withDuration: 0.05) {
             sender.alpha = 1.0
         }
+
+        // Hide the popup
+        hideKeyPopup()
 
         // If delete button, stop continuous deletion
         if sender == deleteButton {
@@ -333,5 +344,91 @@ class ArmenianKeyboardView: UIView {
         allKeys.append(contentsOf: layout.getBottomRow(numbersMode: isNumbersMode))
 
         return allKeys
+    }
+
+    // MARK: - Key Popup
+    private func showKeyPopup(for button: UIButton, with text: String) {
+        // Remove existing popup if any
+        hideKeyPopup()
+
+        // Don't show popup for special keys (shift, delete, return, etc.)
+        // Only show for character keys and space
+        let keys = getAllKeys()
+        guard button.tag < keys.count else { return }
+        let key = keys[button.tag]
+
+        switch key.type {
+        case .character, .space:
+            break // Show popup for these
+        default:
+            return // Don't show popup for special keys
+        }
+
+        // Create popup view
+        let popup = UIView()
+        popup.backgroundColor = UIColor(hex: "#6b6b6b")  // Match button background
+        popup.layer.cornerRadius = 5
+        popup.layer.shadowColor = UIColor.black.cgColor
+        popup.layer.shadowOffset = CGSize(width: 0, height: 2)
+        popup.layer.shadowOpacity = 0.3
+        popup.layer.shadowRadius = 4
+        popup.translatesAutoresizingMaskIntoConstraints = false
+
+        // Create label for the character
+        let label = UILabel()
+        label.text = text
+        label.textColor = .white
+        label.font = .systemFont(ofSize: 28, weight: .regular)
+        label.textAlignment = .center
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        popup.addSubview(label)
+
+        // Add popup to the main view
+        addSubview(popup)
+        keyPopupView = popup
+
+        // Get button's position in this view
+        let buttonFrame = button.convert(button.bounds, to: self)
+
+        // Popup dimensions - smaller
+        let popupWidth: CGFloat = 44
+        let popupHeight: CGFloat = 52
+
+        // Position popup above and centered on the button
+        NSLayoutConstraint.activate([
+            popup.widthAnchor.constraint(equalToConstant: popupWidth),
+            popup.heightAnchor.constraint(equalToConstant: popupHeight),
+            popup.centerXAnchor.constraint(equalTo: leadingAnchor, constant: buttonFrame.midX),
+            popup.bottomAnchor.constraint(equalTo: topAnchor, constant: buttonFrame.minY - 8)
+        ])
+
+        // Center label in popup
+        NSLayoutConstraint.activate([
+            label.centerXAnchor.constraint(equalTo: popup.centerXAnchor),
+            label.centerYAnchor.constraint(equalTo: popup.centerYAnchor, constant: -5)
+        ])
+
+        // Animate popup appearance
+        popup.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+        popup.alpha = 0
+
+        UIView.animate(withDuration: 0.08, delay: 0, options: .curveEaseOut) {
+            popup.transform = .identity
+            popup.alpha = 1.0
+        }
+    }
+
+    private func hideKeyPopup() {
+        guard let popup = keyPopupView else { return }
+
+        UIView.animate(withDuration: 0.08, delay: 0, options: .curveEaseIn, animations: {
+            popup.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+            popup.alpha = 0
+        }) { _ in
+            popup.removeFromSuperview()
+        }
+
+        keyPopupView = nil
     }
 }
