@@ -301,19 +301,22 @@ class ArmenianKeyboardView: UIView {
     }
 
     @objc private func keyReleased(_ sender: UIButton) {
+        // If delete button, handle instantly for rapid taps
+        if sender == deleteButton {
+            sender.alpha = 1.0  // No animation for instant response
+            isDeleteButtonHeld = false
+            deleteTimer?.invalidate()
+            deleteTimer = nil
+            return
+        }
+
+        // For other keys, animate the release
         UIView.animate(withDuration: 0.05) {
             sender.alpha = 1.0
         }
 
         // Hide the popup
         hideKeyPopup()
-
-        // If delete button, stop continuous deletion
-        if sender == deleteButton {
-            isDeleteButtonHeld = false
-            deleteTimer?.invalidate()
-            deleteTimer = nil
-        }
     }
 
     // MARK: - State Updates
