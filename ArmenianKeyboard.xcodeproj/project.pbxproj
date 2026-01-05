@@ -21,6 +21,9 @@
 		BB5729B0CEB46F44289702E2 /* BigramDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */; };
 		NBFE47B040DD9E448FB8F2C7 /* NGramPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */; };
 		CB5DE26F4A961B44AAA15AD9 /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6963DE9C816940449A5A56 /* ContextTracker.swift */; };
+		ML0000010000000000000001 /* MLPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ML0000020000000000000001 /* MLPredictor.swift */; };
+		ML0000030000000000000001 /* ArmenianPredictor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = ML0000040000000000000001 /* ArmenianPredictor.mlpackage */; };
+		ML0000050000000000000001 /* vocabulary.json in Resources */ = {isa = PBXBuildFile; fileRef = ML0000060000000000000001 /* vocabulary.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +68,9 @@
 		BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigramDictionary.swift; sourceTree = "<group>"; };
 		NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NGramPredictor.swift; sourceTree = "<group>"; };
 		CF6963DE9C816940449A5A56 /* ContextTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextTracker.swift; sourceTree = "<group>"; };
+		ML0000020000000000000001 /* MLPredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLPredictor.swift; sourceTree = "<group>"; };
+		ML0000040000000000000001 /* ArmenianPredictor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ArmenianPredictor.mlpackage; sourceTree = "<group>"; };
+		ML0000060000000000000001 /* vocabulary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = vocabulary.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,6 +124,9 @@
 				BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */,
 				NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */,
 				CF6963DE9C816940449A5A56 /* ContextTracker.swift */,
+				ML0000020000000000000001 /* MLPredictor.swift */,
+				ML0000040000000000000001 /* ArmenianPredictor.mlpackage */,
+				ML0000060000000000000001 /* vocabulary.json */,
 				AA0000310000000000000001 /* Info.plist */,
 			);
 			path = ArmenianKeyboardExtension;
@@ -221,6 +230,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ML0000050000000000000001 /* vocabulary.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,6 +260,8 @@
 				BB5729B0CEB46F44289702E2 /* BigramDictionary.swift in Sources */,
 				NBFE47B040DD9E448FB8F2C7 /* NGramPredictor.swift in Sources */,
 				CB5DE26F4A961B44AAA15AD9 /* ContextTracker.swift in Sources */,
+				ML0000010000000000000001 /* MLPredictor.swift in Sources */,
+				ML0000030000000000000001 /* ArmenianPredictor.mlpackage in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

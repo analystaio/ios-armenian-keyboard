@@ -11,7 +11,7 @@ class ContextTracker {
 
     // Store last N words for context
     private var wordHistory: [String] = []
-    private let maxHistorySize = 3  // Track last 3 words
+    private let maxHistorySize = 5  // Track last 5 words for LSTM context
 
     /// Adds a word to the context history
     /// - Parameter word: The word to add (should be complete word, not partial)

@@ -35,6 +35,7 @@ class KeyboardViewController: UIInputViewController {
     private let armenianLayout = ArmenianKeyboardLayout()
     private let wordPredictor = ArmenianWordPredictor()
     private let ngramPredictor = NGramPredictor()
+    private let mlPredictor = MLPredictor()
     private let contextTracker = ContextTracker()
     private var isShifted = false
     private var isCapsLocked = false
@@ -149,11 +150,18 @@ class KeyboardViewController: UIInputViewController {
             suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
             print("DEBUG: Got \(suggestions.count) prefix suggestions: \(suggestions)")
         }
-        // Scenario 2: User just finished a word (next word prediction)
-        else if let lastWord = contextTracker.getLastWord() {
-            print("DEBUG: Scenario 2 - Next word prediction after '\(lastWord)'")
-            suggestions = ngramPredictor.predictNext(after: lastWord, limit: 3)
-            print("DEBUG: Got \(suggestions.count) next word predictions: \(suggestions)")
+        // Scenario 2: User just finished a word (next word prediction using LSTM)
+        else if contextTracker.getLastWord() != nil {
+            let context = contextTracker.getLastWords(count: 5)
+            print("DEBUG: Scenario 2 - Next word prediction with context: \(context)")
+            suggestions = mlPredictor.predictNext(context: context, limit: 3)
+            print("DEBUG: Got \(suggestions.count) ML predictions: \(suggestions)")
+
+            // Fall back to n-gram if ML predictor returns nothing
+            if suggestions.isEmpty, let lastWord = contextTracker.getLastWord() {
+                print("DEBUG: Falling back to n-gram predictor")
+                suggestions = ngramPredictor.predictNext(after: lastWord, limit: 3)
+            }
         }
         else {
             print("DEBUG: No current word and no context - clearing suggestions")
