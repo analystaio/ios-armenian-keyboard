@@ -126,8 +126,7 @@ class KeyboardViewController: UIInputViewController {
     }
 
     private func updateKeyboardAppearance() {
-        // Custom background color
-        view.backgroundColor = UIColor(hex: "#2B2B2B")
+        view.backgroundColor = KeyboardColors.background
     }
 
     // MARK: - Suggestions

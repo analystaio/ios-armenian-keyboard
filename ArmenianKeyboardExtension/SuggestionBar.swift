@@ -28,8 +28,7 @@ class SuggestionBar: UIView {
 
     // MARK: - Setup
     private func setup() {
-        // Custom background color
-        backgroundColor = UIColor(hex: "#2B2B2B")
+        backgroundColor = KeyboardColors.background
 
         // Setup stack view
         stackView.axis = .horizontal
@@ -56,7 +55,7 @@ class SuggestionBar: UIView {
     private func createSuggestionButton(tag: Int) -> UIButton {
         var configuration = UIButton.Configuration.plain()
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
-        configuration.baseForegroundColor = .white
+        configuration.baseForegroundColor = KeyboardColors.suggestionText
         configuration.background.backgroundColor = .clear
 
         let button = UIButton(configuration: configuration)
@@ -71,7 +70,7 @@ class SuggestionBar: UIView {
 
             // Add a thin divider line on the right
             let divider = UIView()
-            divider.backgroundColor = UIColor.white.withAlphaComponent(0.2)
+            divider.backgroundColor = KeyboardColors.suggestionDivider
             divider.translatesAutoresizingMaskIntoConstraints = false
             button.addSubview(divider)
 

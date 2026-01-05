@@ -205,9 +205,9 @@ class ArmenianKeyboardView: UIView {
         // Background styling - match iOS appearance
         button.backgroundColor = getKeyBackgroundColor(for: key.type)
         button.layer.cornerRadius = 5
-        button.layer.shadowColor = UIColor.black.cgColor
+        button.layer.shadowColor = KeyboardColors.keyShadow.cgColor
         button.layer.shadowOffset = CGSize(width: 0, height: 1)
-        button.layer.shadowOpacity = 0.15
+        button.layer.shadowOpacity = 0.3
         button.layer.shadowRadius = 0.5
 
         // Add touch handlers
@@ -225,7 +225,7 @@ class ArmenianKeyboardView: UIView {
             shiftButton = button
             // Highlight if shift or caps lock is active
             if isShifted || isCapsLocked {
-                button.backgroundColor = UIColor(hex: "#8b8b8b")
+                button.backgroundColor = KeyboardColors.shiftActiveBackground
             }
         }
 
@@ -236,12 +236,11 @@ class ArmenianKeyboardView: UIView {
     }
 
     private func getKeyBackgroundColor(for keyType: KeyType) -> UIColor {
-        // Special keys use darker color
         switch keyType {
         case .shift, .delete, .numbers, .emoji, .return:
-            return UIColor(hex: "#464646")
+            return KeyboardColors.specialKeyBackground
         case .character, .space, .globe:
-            return UIColor(hex: "#6b6b6b")
+            return KeyboardColors.keyBackground
         }
     }
 
@@ -364,9 +363,9 @@ class ArmenianKeyboardView: UIView {
 
         // Create popup view
         let popup = UIView()
-        popup.backgroundColor = UIColor(hex: "#6b6b6b")  // Match button background
+        popup.backgroundColor = KeyboardColors.popupBackground
         popup.layer.cornerRadius = 5
-        popup.layer.shadowColor = UIColor.black.cgColor
+        popup.layer.shadowColor = KeyboardColors.keyShadow.cgColor
         popup.layer.shadowOffset = CGSize(width: 0, height: 2)
         popup.layer.shadowOpacity = 0.3
         popup.layer.shadowRadius = 4
@@ -375,7 +374,7 @@ class ArmenianKeyboardView: UIView {
         // Create label for the character
         let label = UILabel()
         label.text = text
-        label.textColor = .white
+        label.textColor = KeyboardColors.popupText
         label.font = .systemFont(ofSize: 28, weight: .regular)
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
