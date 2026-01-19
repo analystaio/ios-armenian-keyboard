@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 protocol ArmenianKeyboardViewDelegate: AnyObject {
     func didTapKey(_ key: KeyboardKey)
@@ -42,6 +43,8 @@ class ArmenianKeyboardView: UIView {
     private var trackpadLastX: CGFloat = 0
     private var trackpadAccumulatedOffset: CGFloat = 0
     private let trackpadSensitivity: CGFloat = 10 // Points per character
+    private var originalKeyBackgrounds: [UIButton: UIColor] = [:]
+    private let trackpadGreyColor = UIColor(red: 81/255, green: 81/255, blue: 81/255, alpha: 1.0)
 
     // MARK: - Initialization
     init(layout: ArmenianKeyboardLayout) {
@@ -353,17 +356,18 @@ class ArmenianKeyboardView: UIView {
             trackpadLastX = location.x
             trackpadAccumulatedOffset = 0
 
-            // Visual feedback - grey out entire keyboard
+            // Store original backgrounds and grey out entire keyboard
+            originalKeyBackgrounds.removeAll()
             UIView.animate(withDuration: 0.1) {
                 for keyButton in self.keyButtons {
-                    keyButton.alpha = 0.3
+                    self.originalKeyBackgrounds[keyButton] = keyButton.backgroundColor
+                    keyButton.backgroundColor = self.trackpadGreyColor
                     keyButton.setTitleColor(.clear, for: .normal)
                 }
             }
 
-            // Provide haptic feedback
-            let feedback = UIImpactFeedbackGenerator(style: .light)
-            feedback.impactOccurred()
+            // Provide haptic feedback (1519 = peek, 1520 = pop, 1521 = nope)
+            AudioServicesPlaySystemSound(1520)
 
         case .changed:
             guard isTrackpadMode else { return }
@@ -391,10 +395,13 @@ class ArmenianKeyboardView: UIView {
             // Restore entire keyboard appearance
             UIView.animate(withDuration: 0.1) {
                 for keyButton in self.keyButtons {
-                    keyButton.alpha = 1.0
+                    if let originalColor = self.originalKeyBackgrounds[keyButton] {
+                        keyButton.backgroundColor = originalColor
+                    }
                     keyButton.setTitleColor(.label, for: .normal)
                 }
             }
+            originalKeyBackgrounds.removeAll()
 
             // Reset the flag after a short delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
