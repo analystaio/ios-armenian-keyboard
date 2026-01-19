@@ -39,10 +39,11 @@ class ArmenianKeyboardView: UIView {
     private var spaceButton: UIButton?
     private var isTrackpadMode = false
     private var wasTrackpadMode = false // Prevents space insertion after trackpad use
-    private var trackpadStartX: CGFloat = 0
     private var trackpadLastX: CGFloat = 0
+    private var trackpadLastTime: TimeInterval = 0
     private var trackpadAccumulatedOffset: CGFloat = 0
-    private let trackpadSensitivity: CGFloat = 10 // Points per character
+    private let trackpadBaseSensitivity: CGFloat = 12 // Base points per character (slower)
+    private let trackpadMinSensitivity: CGFloat = 4   // Min points per character (faster)
     private var originalKeyBackgrounds: [UIButton: UIColor] = [:]
     private let trackpadGreyColor = UIColor(red: 81/255, green: 81/255, blue: 81/255, alpha: 1.0)
 
@@ -352,8 +353,8 @@ class ArmenianKeyboardView: UIView {
         case .began:
             // Enter trackpad mode
             isTrackpadMode = true
-            trackpadStartX = location.x
             trackpadLastX = location.x
+            trackpadLastTime = Date.timeIntervalSinceReferenceDate
             trackpadAccumulatedOffset = 0
 
             // Store original backgrounds and grey out entire keyboard
@@ -372,19 +373,32 @@ class ArmenianKeyboardView: UIView {
         case .changed:
             guard isTrackpadMode else { return }
 
+            let currentTime = Date.timeIntervalSinceReferenceDate
+            let deltaTime = currentTime - trackpadLastTime
             let deltaX = location.x - trackpadLastX
+
+            // Calculate velocity (points per second)
+            let velocity = deltaTime > 0 ? abs(deltaX) / CGFloat(deltaTime) : 0
+
+            // Calculate dynamic sensitivity based on velocity
+            // Faster movement = lower sensitivity = more characters per point
+            // velocity of ~100 pts/sec = base sensitivity, ~500+ pts/sec = min sensitivity
+            let velocityFactor = min(1.0, max(0.0, (velocity - 100) / 400))
+            let sensitivity = trackpadBaseSensitivity - (velocityFactor * (trackpadBaseSensitivity - trackpadMinSensitivity))
+
             trackpadAccumulatedOffset += deltaX
 
-            // Calculate character offset based on sensitivity
-            let characterOffset = Int(trackpadAccumulatedOffset / trackpadSensitivity)
+            // Calculate character offset based on dynamic sensitivity
+            let characterOffset = Int(trackpadAccumulatedOffset / sensitivity)
 
             if characterOffset != 0 {
                 delegate?.didMoveCursor(byOffset: characterOffset)
                 // Reset accumulated offset, keeping remainder
-                trackpadAccumulatedOffset -= CGFloat(characterOffset) * trackpadSensitivity
+                trackpadAccumulatedOffset -= CGFloat(characterOffset) * sensitivity
             }
 
             trackpadLastX = location.x
+            trackpadLastTime = currentTime
 
         case .ended, .cancelled, .failed:
             // Exit trackpad mode
