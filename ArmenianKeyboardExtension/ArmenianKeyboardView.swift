@@ -9,6 +9,7 @@ import UIKit
 
 protocol ArmenianKeyboardViewDelegate: AnyObject {
     func didTapKey(_ key: KeyboardKey)
+    func didMoveCursor(byOffset offset: Int)
 }
 
 class ArmenianKeyboardView: UIView {
@@ -32,6 +33,15 @@ class ArmenianKeyboardView: UIView {
 
     // Key popup
     private var keyPopupView: UIView?
+
+    // Space bar trackpad mode
+    private var spaceButton: UIButton?
+    private var isTrackpadMode = false
+    private var wasTrackpadMode = false // Prevents space insertion after trackpad use
+    private var trackpadStartX: CGFloat = 0
+    private var trackpadLastX: CGFloat = 0
+    private var trackpadAccumulatedOffset: CGFloat = 0
+    private let trackpadSensitivity: CGFloat = 10 // Points per character
 
     // MARK: - Initialization
     init(layout: ArmenianKeyboardLayout) {
@@ -229,6 +239,15 @@ class ArmenianKeyboardView: UIView {
             }
         }
 
+        // For space key, add long press gesture for trackpad mode
+        if case .space = key.type {
+            spaceButton = button
+            let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleSpaceLongPress(_:)))
+            longPressGesture.minimumPressDuration = 0.5
+            longPressGesture.allowableMovement = .greatestFiniteMagnitude
+            button.addGestureRecognizer(longPressGesture)
+        }
+
         // Store key data
         button.tag = keyButtons.count
 
@@ -256,10 +275,20 @@ class ArmenianKeyboardView: UIView {
             return
         }
 
+        // Skip space key if we just exited trackpad mode
+        if case .space = key.type, wasTrackpadMode {
+            return
+        }
+
         delegate?.didTapKey(key)
     }
 
     @objc private func keyPressed(_ sender: UIButton) {
+        // Skip if in trackpad mode (space bar long press)
+        if isTrackpadMode && sender == spaceButton {
+            return
+        }
+
         // If delete key, handle it immediately for instant response
         if sender == deleteButton {
             sender.alpha = 0.3
@@ -308,6 +337,73 @@ class ArmenianKeyboardView: UIView {
 
         // Hide the popup
         hideKeyPopup()
+    }
+
+    // MARK: - Space Bar Trackpad Mode
+    @objc private func handleSpaceLongPress(_ gesture: UILongPressGestureRecognizer) {
+        guard spaceButton != nil else { return }
+
+        let location = gesture.location(in: self)
+
+        switch gesture.state {
+        case .began:
+            // Enter trackpad mode
+            isTrackpadMode = true
+            trackpadStartX = location.x
+            trackpadLastX = location.x
+            trackpadAccumulatedOffset = 0
+
+            // Visual feedback - grey out entire keyboard
+            UIView.animate(withDuration: 0.1) {
+                for keyButton in self.keyButtons {
+                    keyButton.alpha = 0.3
+                    keyButton.setTitleColor(.clear, for: .normal)
+                }
+            }
+
+            // Provide haptic feedback
+            let feedback = UIImpactFeedbackGenerator(style: .light)
+            feedback.impactOccurred()
+
+        case .changed:
+            guard isTrackpadMode else { return }
+
+            let deltaX = location.x - trackpadLastX
+            trackpadAccumulatedOffset += deltaX
+
+            // Calculate character offset based on sensitivity
+            let characterOffset = Int(trackpadAccumulatedOffset / trackpadSensitivity)
+
+            if characterOffset != 0 {
+                delegate?.didMoveCursor(byOffset: characterOffset)
+                // Reset accumulated offset, keeping remainder
+                trackpadAccumulatedOffset -= CGFloat(characterOffset) * trackpadSensitivity
+            }
+
+            trackpadLastX = location.x
+
+        case .ended, .cancelled, .failed:
+            // Exit trackpad mode
+            isTrackpadMode = false
+            wasTrackpadMode = true // Prevent space insertion
+            trackpadAccumulatedOffset = 0
+
+            // Restore entire keyboard appearance
+            UIView.animate(withDuration: 0.1) {
+                for keyButton in self.keyButtons {
+                    keyButton.alpha = 1.0
+                    keyButton.setTitleColor(.label, for: .normal)
+                }
+            }
+
+            // Reset the flag after a short delay
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                self?.wasTrackpadMode = false
+            }
+
+        default:
+            break
+        }
     }
 
     // MARK: - State Updates

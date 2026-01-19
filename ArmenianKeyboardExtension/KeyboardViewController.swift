@@ -286,4 +286,8 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
         isNumbersMode.toggle()
         keyboardView.setNumbersMode(isNumbersMode)
     }
+
+    func didMoveCursor(byOffset offset: Int) {
+        textDocumentProxy.adjustTextPosition(byCharacterOffset: offset)
+    }
 }
