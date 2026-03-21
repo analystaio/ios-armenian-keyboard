@@ -25,6 +25,7 @@
 		ML0000030000000000000001 /* ArmenianPredictor.mlpackage in Sources */ = {isa = PBXBuildFile; fileRef = ML0000040000000000000001 /* ArmenianPredictor.mlpackage */; };
 		ML0000050000000000000001 /* vocabulary.json in Resources */ = {isa = PBXBuildFile; fileRef = ML0000060000000000000001 /* vocabulary.json */; };
 		KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = KC0000020000000000000001 /* KeyboardColors.swift */; };
+		NG0000010000000000000001 /* armenian_ngram.json in Resources */ = {isa = PBXBuildFile; fileRef = NG0000020000000000000001 /* armenian_ngram.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +74,7 @@
 		ML0000040000000000000001 /* ArmenianPredictor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = ArmenianPredictor.mlpackage; sourceTree = "<group>"; };
 		ML0000060000000000000001 /* vocabulary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = vocabulary.json; sourceTree = "<group>"; };
 		KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardColors.swift; sourceTree = "<group>"; };
+		NG0000020000000000000001 /* armenian_ngram.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = armenian_ngram.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +132,7 @@
 				ML0000040000000000000001 /* ArmenianPredictor.mlpackage */,
 				ML0000060000000000000001 /* vocabulary.json */,
 				KC0000020000000000000001 /* KeyboardColors.swift */,
+				NG0000020000000000000001 /* armenian_ngram.json */,
 				AA0000310000000000000001 /* Info.plist */,
 			);
 			path = ArmenianKeyboardExtension;
@@ -234,6 +237,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ML0000050000000000000001 /* vocabulary.json in Resources */,
+				NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

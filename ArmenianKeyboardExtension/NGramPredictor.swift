@@ -2,60 +2,87 @@
 //  NGramPredictor.swift
 //  ArmenianKeyboardExtension
 //
-//  Predicts next word based on previous word context using bigrams
+//  Next-word prediction using a 4-gram JSON model with backoff:
+//  4-gram → 3-gram → 2-gram → 1-gram (most common words)
 //
 
 import Foundation
 
 class NGramPredictor {
 
-    // HashMap for O(1) lookup: firstWord -> [(nextWord, probability)]
-    private let bigramMap: [String: [(word: String, probability: Double)]]
+    private var fourgram: [String: [String]] = [:]  // "w1 w2 w3" -> [next words]
+    private var trigram:  [String: [String]] = [:]  // "w1 w2"    -> [next words]
+    private var bigram:   [String: [String]] = [:]  // "w1"       -> [next words]
+    private var unigram:  [String] = []             // top words overall
 
     init() {
-        // Build bigram lookup map on initialization
-        self.bigramMap = BigramDictionary.buildBigramMap()
-
-        print("DEBUG: NGramPredictor initialized with \(bigramMap.count) unique starting words")
+        loadModel()
     }
 
-    /// Predicts next words based on the previous word
+    private func loadModel() {
+        guard let url = Bundle.main.url(forResource: "armenian_ngram", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else {
+            print("DEBUG: NGramPredictor - failed to load armenian_ngram.json")
+            return
+        }
+
+        fourgram = json["4gram"] as? [String: [String]] ?? [:]
+        trigram  = json["3gram"] as? [String: [String]] ?? [:]
+        bigram   = json["2gram"] as? [String: [String]] ?? [:]
+        unigram  = json["1gram"] as? [String] ?? []
+
+        print("DEBUG: NGramPredictor loaded — 4g:\(fourgram.count) 3g:\(trigram.count) 2g:\(bigram.count) vocab:\(unigram.count)")
+    }
+
+    // Normalize Armenian ligature ев (U+0587) → ե+վ (U+0565+U+057E)
+    // Keyboards output the two letters separately; model is built the same way.
+    private func normalize(_ s: String) -> String {
+        return s.replacingOccurrences(of: "\u{0587}", with: "\u{0565}\u{057E}")
+    }
+
+    /// Predicts next words given recent context words, with backoff.
     /// - Parameters:
-    ///   - previousWord: The last word typed by the user
-    ///   - limit: Maximum number of predictions to return (default 3)
-    /// - Returns: Array of predicted next words, sorted by probability
+    ///   - context: Recent words in order (oldest → newest), e.g. ["ես", "քեզ", "շատ"]
+    ///   - limit: Max suggestions to return
+    func predictNext(context: [String], limit: Int = 3) -> [String] {
+        let words = context.map { normalize($0).lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }
+                           .filter { !$0.isEmpty }
+
+        // Try 4-gram (3-word context)
+        if words.count >= 3 {
+            let key = words.suffix(3).joined(separator: " ")
+            if let preds = fourgram[key], !preds.isEmpty {
+                return Array(preds.prefix(limit))
+            }
+        }
+
+        // Try 3-gram (2-word context)
+        if words.count >= 2 {
+            let key = words.suffix(2).joined(separator: " ")
+            if let preds = trigram[key], !preds.isEmpty {
+                return Array(preds.prefix(limit))
+            }
+        }
+
+        // Try 2-gram (1-word context)
+        if let lastWord = words.last {
+            if let preds = bigram[lastWord], !preds.isEmpty {
+                return Array(preds.prefix(limit))
+            }
+        }
+
+        // Fall back to most common words
+        return Array(unigram.prefix(limit))
+    }
+
+    /// Backward-compatible single-word interface
     func predictNext(after previousWord: String, limit: Int = 3) -> [String] {
-        // Normalize to lowercase for matching
-        let normalizedWord = previousWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !normalizedWord.isEmpty else {
-            print("DEBUG: Empty previous word, no predictions")
-            return []
-        }
-
-        // Look up bigrams starting with this word
-        guard let candidates = bigramMap[normalizedWord] else {
-            print("DEBUG: No bigrams found for word: \(normalizedWord)")
-            return []
-        }
-
-        // Return top N predictions
-        let predictions = Array(candidates.prefix(limit)).map { $0.word }
-
-        print("DEBUG: Predictions for '\(normalizedWord)': \(predictions)")
-        return predictions
+        return predictNext(context: [previousWord], limit: limit)
     }
 
-    /// Returns all possible next words for a given word (for debugging)
-    func getAllPredictions(after previousWord: String) -> [(word: String, probability: Double)] {
-        let normalizedWord = previousWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
-        return bigramMap[normalizedWord] ?? []
-    }
-
-    /// Returns statistics about the loaded bigram data
-    func getStats() -> (uniqueFirstWords: Int, totalBigrams: Int) {
-        let uniqueWords = bigramMap.count
-        let totalBigrams = bigramMap.values.reduce(0) { $0 + $1.count }
-        return (uniqueWords, totalBigrams)
+    var isReady: Bool {
+        return !bigram.isEmpty
     }
 }

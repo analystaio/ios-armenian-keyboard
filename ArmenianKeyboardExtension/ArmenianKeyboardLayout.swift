@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum ArmenianLayoutType {
+    case eastern
+    case western
+}
+
 enum KeyType {
     case character(String)
     case delete

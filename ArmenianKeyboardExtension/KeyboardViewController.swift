@@ -149,17 +149,19 @@ class KeyboardViewController: UIInputViewController {
             suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
             print("DEBUG: Got \(suggestions.count) prefix suggestions: \(suggestions)")
         }
-        // Scenario 2: User just finished a word (next word prediction using LSTM)
+        // Scenario 2: User just finished a word (next word prediction)
         else if contextTracker.getLastWord() != nil {
-            let context = contextTracker.getLastWords(count: 5)
+            let context = contextTracker.getLastWords(count: 3)
             print("DEBUG: Scenario 2 - Next word prediction with context: \(context)")
-            suggestions = mlPredictor.predictNext(context: context, limit: 3)
-            print("DEBUG: Got \(suggestions.count) ML predictions: \(suggestions)")
 
-            // Fall back to n-gram if ML predictor returns nothing
-            if suggestions.isEmpty, let lastWord = contextTracker.getLastWord() {
-                print("DEBUG: Falling back to n-gram predictor")
-                suggestions = ngramPredictor.predictNext(after: lastWord, limit: 3)
+            // N-gram is primary (native Armenian training data)
+            suggestions = ngramPredictor.predictNext(context: context, limit: 3)
+            print("DEBUG: Got \(suggestions.count) n-gram predictions: \(suggestions)")
+
+            // Fall back to LSTM if n-gram returns nothing
+            if suggestions.isEmpty {
+                print("DEBUG: Falling back to LSTM predictor")
+                suggestions = mlPredictor.predictNext(context: context, limit: 3)
             }
         }
         else {
