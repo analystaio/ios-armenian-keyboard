@@ -109,7 +109,7 @@ struct ContentView: View {
 
                     // Privacy Policy
                     Button(action: {
-                        if let url = URL(string: "https://analysta.io/armenian-keyboard/privacy") {
+                        if let url = URL(string: "https://analystaio.github.io/ios-armenian-keyboard/privacy.html") {
                             UIApplication.shared.open(url)
                         }
                     }) {
