@@ -28,7 +28,6 @@ class NGramPredictor {
                   let data = try? Data(contentsOf: url),
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
             else {
-                print("DEBUG: NGramPredictor - failed to load armenian_ngram.json")
                 return
             }
 
@@ -42,7 +41,6 @@ class NGramPredictor {
                 self?.trigram  = tg
                 self?.bigram   = bg
                 self?.unigram  = ug
-                print("DEBUG: NGramPredictor loaded async — 4g:\(fg.count) 3g:\(tg.count) 2g:\(bg.count) vocab:\(ug.count)")
                 self?.onReady?()
             }
         }

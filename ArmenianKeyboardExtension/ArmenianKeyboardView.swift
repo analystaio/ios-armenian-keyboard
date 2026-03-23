@@ -22,6 +22,7 @@ class ArmenianKeyboardView: UIView {
     private var isShifted = false
     private var isCapsLocked = false
     private var isNumbersMode = false
+    var showGlobeKey = true
 
     private let keySpacing: CGFloat = 6
     private let rowSpacing: CGFloat = 12
@@ -142,7 +143,7 @@ class ArmenianKeyboardView: UIView {
         rowView.distribution = .fill
         rowView.translatesAutoresizingMaskIntoConstraints = false
 
-        let keys = layout.getBottomRow(numbersMode: isNumbersMode)
+        let keys = layout.getBottomRow(numbersMode: isNumbersMode, showGlobeKey: showGlobeKey)
 
         for key in keys {
             let button = createKeyButton(for: key)
@@ -491,7 +492,7 @@ class ArmenianKeyboardView: UIView {
             allKeys.append(contentsOf: layout.getKeys(forRow: i, numbersMode: isNumbersMode))
         }
 
-        allKeys.append(contentsOf: layout.getBottomRow(numbersMode: isNumbersMode))
+        allKeys.append(contentsOf: layout.getBottomRow(numbersMode: isNumbersMode, showGlobeKey: showGlobeKey))
 
         return allKeys
     }

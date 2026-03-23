@@ -81,6 +81,7 @@ class KeyboardViewController: UIInputViewController {
         keyboardView = ArmenianKeyboardView(layout: armenianLayout)
         keyboardView.translatesAutoresizingMaskIntoConstraints = false
         keyboardView.delegate = self
+        keyboardView.showGlobeKey = needsInputModeSwitchKey
         view.addSubview(keyboardView)
 
         // Layout constraints
