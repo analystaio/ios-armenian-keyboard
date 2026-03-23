@@ -35,8 +35,7 @@ class KeyboardViewController: UIInputViewController {
     private let armenianLayout = ArmenianKeyboardLayout()
     private let wordPredictor = ArmenianWordPredictor()
     private let ngramPredictor = NGramPredictor()
-    private let mlPredictor = MLPredictor()
-    private let contextTracker = ContextTracker()
+private let contextTracker = ContextTracker()
     private var isShifted = false
     private var isCapsLocked = false
     private var isNumbersMode = false
@@ -154,15 +153,8 @@ class KeyboardViewController: UIInputViewController {
             let context = contextTracker.getLastWords(count: 3)
             print("DEBUG: Scenario 2 - Next word prediction with context: \(context)")
 
-            // N-gram is primary (native Armenian training data)
             suggestions = ngramPredictor.predictNext(context: context, limit: 3)
             print("DEBUG: Got \(suggestions.count) n-gram predictions: \(suggestions)")
-
-            // Fall back to LSTM if n-gram returns nothing
-            if suggestions.isEmpty {
-                print("DEBUG: Falling back to LSTM predictor")
-                suggestions = mlPredictor.predictNext(context: context, limit: 3)
-            }
         }
         else {
             print("DEBUG: No current word and no context - clearing suggestions")
