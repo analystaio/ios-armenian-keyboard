@@ -91,3 +91,19 @@ iOSInjectionProject/
 
 # Mac
 .DS_Store
+
+# ML training scripts and data
+ml_training/
+
+# Sensitive / local files
+*.env
+ExportOptions.plist
+armenian_transliteration_dict.json
+screenshots/
+
+# Skills / agent config
+.agent/
+.agents/
+.claude/skills/
+.kiro/
+skills-lock.json
