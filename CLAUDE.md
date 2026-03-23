@@ -22,73 +22,11 @@ The user has an Arch Linux machine with an NVIDIA RTX 3060 (12GB VRAM) for train
 - **Working directory**: `/home/varant/ml_training/`
 - **Virtual environment**: `/home/varant/ml_training/.venv/`
 - **PyTorch version**: 2.5.1+cu121 (CUDA enabled)
-
-### Directory Structure on Arch Machine
-
-```
-/home/varant/ml_training/
-├── .venv/                    # Python virtual environment
-├── data/
-│   ├── combined_v2_train.txt # Training data (29MB, 229K lines)
-│   ├── combined_v2_test.txt  # Test data (864KB, 11K lines)
-│   └── ...
-├── models/                   # Saved model checkpoints
-├── hyperparam_tuning.py      # Hyperparameter search script
-├── train_conversational.py   # Main training script
-└── tuning.log               # Training output log
-```
-
-### Running Training Jobs
-
-```bash
-# Copy scripts to Arch machine
-scp ml_training/hyperparam_tuning.py varant@archpc.lan:~/ml_training/
-
-# Start training in background (persists after SSH disconnect)
-ssh varant@archpc.lan "cd ~/ml_training && source .venv/bin/activate && nohup python hyperparam_tuning.py > tuning.log 2>&1 &"
-
-# Check if training is running
-ssh varant@archpc.lan "ps aux | grep python | grep -v grep"
-
-# Monitor training progress
-ssh varant@archpc.lan "tail -50 ~/ml_training/tuning.log"
-
-# Check GPU utilization
-ssh varant@archpc.lan "nvidia-smi"
-
-# View hyperparameter tuning results
-ssh varant@archpc.lan "cat ~/ml_training/models/tuning_results.json"
-```
-
-### Retrieving Trained Models
-
-```bash
-# Copy best model back to Mac
-scp varant@archpc.lan:~/ml_training/models/tuning_best_*.pth ml_training/models/
-scp varant@archpc.lan:~/ml_training/models/tuning_tokenizer_*.pkl ml_training/models/
-scp varant@archpc.lan:~/ml_training/models/tuning_results.json ml_training/models/
-```
-
-### Converting to CoreML (on Mac)
-
-After retrieving the best model, convert to CoreML for iOS:
-
-```bash
-cd ml_training
-source .venv/bin/activate
-python convert_conversational_to_coreml.py
-```
-
-Then copy `models/ArmenianPredictor.mlpackage` and `models/vocabulary.json` to the Xcode project.
-
-### venv note
-
-The venv must be created with Python 3.13 explicitly — the system Python is 3.14 which breaks torch:
-
-```bash
-~/.pyenv/versions/3.13.11/bin/python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-```
+- **venv note**: Must use Python 3.13 explicitly (system Python 3.14 breaks torch):
+  ```bash
+  ~/.pyenv/versions/3.13.11/bin/python3 -m venv .venv
+  .venv/bin/pip install -r requirements.txt
+  ```
 
 ## Word Prediction
 
@@ -117,15 +55,6 @@ python3 ml_training/build_ngram.py \
   --output ArmenianKeyboardExtension/armenian_ngram.json \
   --top-k 3 --min-count 2
 ```
-
-### LSTM Model (fallback predictor)
-
-- **Architecture**: LSTM (embedding 128 → LSTM 256 hidden, 2 layers → softmax)
-- **Vocabulary**: 5,000 words
-- **Sequence length**: 5 tokens
-- **Accuracy**: top-1 ~37%, top-3 ~52%
-- **CoreML model**: `ArmenianKeyboardExtension/models/ArmenianPredictor.mlpackage`
-- **iOS integration**: `MLPredictor.swift` — used as fallback when n-gram returns no results
 
 ### Industry Standard (for reference)
 
@@ -175,18 +104,6 @@ Collected from Armenian YouTube interview/podcast channels. ~1.13M words, 188K s
 - `/tmp/nazeni_cleaned_full.txt`
 - `/tmp/mher_cleaned.txt`
 - `/tmp/amalya_cleaned.txt`
-
-### LSTM training data
-
-Combined dataset: `combined_v2_train.txt` — 229K lines, ~2.3M tokens, 28MB
-
-| Source | Size | Quality | Notes |
-|--------|------|---------|-------|
-| HAG corpus | 90K lines, 6.5MB | Machine-translated | Sentences translated to Armenian |
-| OpenSubtitles | 24 files, ~288K words | Possibly machine-translated | Subtitle dialogue |
-| Synthetic v2 | ~4,980 files | Synthetic | Generated sentences |
-
-**Data quality issue**: Most data is machine-translated from English, teaching the model English word order in Armenian. This limits prediction quality.
 
 ### Data Sources to Explore
 
