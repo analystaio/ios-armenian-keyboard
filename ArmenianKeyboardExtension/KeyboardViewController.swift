@@ -35,52 +35,26 @@ class KeyboardViewController: UIInputViewController {
     private let armenianLayout = ArmenianKeyboardLayout()
     private let wordPredictor = ArmenianWordPredictor()
     private let ngramPredictor = NGramPredictor()
-private let contextTracker = ContextTracker()
+    private let contextTracker = ContextTracker()
     private var isShifted = false
     private var isCapsLocked = false
     private var isNumbersMode = false
+
+    // Auto-correction undo state
+    private var lastAutoInsertedWord: String?
+    private var lastOriginalWord: String?
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupKeyboard()
-
-        // TEST: Comprehensive debug test
-        print("===== COMPREHENSIVE TEST START =====")
-        print("Testing Trie directly...")
-        let testTrie = Trie()
-        testTrie.insert("ես", frequency: 100)
-        testTrie.insert("երեխա", frequency: 90)
-        testTrie.insert("եղել", frequency: 85)
-        let trieResults = testTrie.findWordsWithPrefix("ե", limit: 3)
-        print("Direct Trie test for 'ե': \(trieResults)")
-
-        print("\nTesting word predictor...")
-        let predictorResults = wordPredictor.getSuggestions(for: "ե", limit: 3)
-        print("Word predictor test for 'ե': \(predictorResults)")
-
-        print("\nTesting with uppercase...")
-        let uppercaseResults = wordPredictor.getSuggestions(for: "Ե", limit: 3)
-        print("Word predictor test for 'Ե': \(uppercaseResults)")
-
-        print("===== COMPREHENSIVE TEST END =====")
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateKeyboardAppearance()
-
-        // TEST: Verify word predictor works
-        print("DEBUG: viewWillAppear - testing word predictor")
-        let testSuggestions = wordPredictor.getSuggestions(for: "ե", limit: 3)
-        print("DEBUG: Test suggestions for 'ե': \(testSuggestions)")
-
-        // Show initial suggestions
-        if testSuggestions.isEmpty {
-            suggestionBar.updateSuggestions(["բարև", "ողջույն", "շնորհակալ"])
-        } else {
-            suggestionBar.updateSuggestions(testSuggestions)
-        }
+        checkAutoCapitalization()
+        updateSuggestions()
     }
 
     override func textWillChange(_ textInput: UITextInput?) {
@@ -89,9 +63,8 @@ private let contextTracker = ContextTracker()
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
-        print("DEBUG: textDidChange called")
-        print("DEBUG: documentContextBeforeInput = '\(textDocumentProxy.documentContextBeforeInput ?? "nil")'")
         updateSuggestions()
+        checkAutoCapitalization()
     }
 
     // MARK: - Setup
@@ -122,20 +95,63 @@ private let contextTracker = ContextTracker()
             keyboardView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             keyboardView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
+
+        // Refresh suggestions once n-gram model finishes loading
+        ngramPredictor.onReady = { [weak self] in
+            self?.updateSuggestions()
+        }
     }
 
     private func updateKeyboardAppearance() {
         view.backgroundColor = KeyboardColors.background
     }
 
+    // MARK: - Auto-Capitalization
+    private func checkAutoCapitalization() {
+        // Don't interfere with caps lock
+        guard !isCapsLocked else { return }
+
+        let context = textDocumentProxy.documentContextBeforeInput
+
+        // Empty document or start of text — capitalize first letter
+        if context == nil || context!.isEmpty {
+            if !isShifted {
+                isShifted = true
+                keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
+            }
+            return
+        }
+
+        // After a newline
+        if context!.hasSuffix("\n") {
+            if !isShifted {
+                isShifted = true
+                keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
+            }
+            return
+        }
+
+        // After sentence-ending punctuation followed by space
+        if context!.hasSuffix(" ") {
+            let trimmed = context!.dropLast() // remove the trailing space
+            if let lastChar = trimmed.last {
+                let sentenceEnders: Set<Character> = [".", "!", "?", "։"]
+                if sentenceEnders.contains(lastChar) {
+                    if !isShifted {
+                        isShifted = true
+                        keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
+                    }
+                    return
+                }
+            }
+        }
+    }
+
     // MARK: - Suggestions
     private func updateSuggestions() {
-        print("DEBUG: updateSuggestions() called")
-
         // Check if document is completely empty (all text deleted)
         let documentContext = textDocumentProxy.documentContextBeforeInput
         if documentContext != nil && documentContext!.isEmpty {
-            print("DEBUG: Document is empty - clearing suggestions")
             suggestionBar.updateSuggestions([])
             return
         }
@@ -144,41 +160,30 @@ private let contextTracker = ContextTracker()
 
         // Scenario 1: User is typing a word (prefix completion)
         if let currentWord = getCurrentWord(), !currentWord.isEmpty {
-            print("DEBUG: Scenario 1 - Prefix completion for '\(currentWord)'")
             suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
-            print("DEBUG: Got \(suggestions.count) prefix suggestions: \(suggestions)")
         }
         // Scenario 2: User just finished a word (next word prediction)
         else if contextTracker.getLastWord() != nil {
             let context = contextTracker.getLastWords(count: 3)
-            print("DEBUG: Scenario 2 - Next word prediction with context: \(context)")
-
             suggestions = ngramPredictor.predictNext(context: context, limit: 3)
-            print("DEBUG: Got \(suggestions.count) n-gram predictions: \(suggestions)")
-        }
-        else {
-            print("DEBUG: No current word and no context - clearing suggestions")
         }
 
         suggestionBar.updateSuggestions(suggestions)
-        print("DEBUG: Updated suggestion bar with \(suggestions.count) suggestions")
     }
 
     private func getCurrentWord() -> String? {
         guard let documentContext = textDocumentProxy.documentContextBeforeInput else {
-            print("DEBUG: getCurrentWord() - documentContextBeforeInput is nil")
             return nil
         }
-
-        print("DEBUG: getCurrentWord() - documentContext = '\(documentContext)'")
         let components = documentContext.components(separatedBy: .whitespacesAndNewlines)
-        print("DEBUG: getCurrentWord() - components = \(components)")
-        let lastComponent = components.last?.isEmpty == false ? components.last : nil
-        print("DEBUG: getCurrentWord() - returning '\(lastComponent ?? "nil")'")
-        return lastComponent
+        return components.last?.isEmpty == false ? components.last : nil
     }
 
     private func insertSuggestion(_ suggestion: String) {
+        // Clear any pending auto-correct undo
+        lastAutoInsertedWord = nil
+        lastOriginalWord = nil
+
         // Delete current word
         if let currentWord = getCurrentWord() {
             for _ in 0..<currentWord.count {
@@ -186,12 +191,13 @@ private let contextTracker = ContextTracker()
             }
         }
 
-        // Insert suggestion
+        // Insert suggestion + space
         textDocumentProxy.insertText(suggestion)
         textDocumentProxy.insertText(" ")
 
-        // Update suggestions
-        suggestionBar.updateSuggestions([])
+        contextTracker.addWord(suggestion)
+        updateSuggestions()
+        checkAutoCapitalization()
     }
 }
 
@@ -206,7 +212,6 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             // Clear context on sentence boundaries (., !, ?, ։)
             if ContextTracker.isSentenceBoundary(char) {
                 contextTracker.clear()
-                print("DEBUG: Sentence boundary detected, context cleared")
             }
 
             // Reset shift if not caps locked
@@ -215,14 +220,40 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
                 keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
             }
 
-            // Update suggestions after inserting character
+            // Clear auto-correct undo state (user continued typing)
+            lastAutoInsertedWord = nil
+            lastOriginalWord = nil
+
             updateSuggestions()
 
         case .delete:
-            textDocumentProxy.deleteBackward()
+            // Check if we should undo an auto-correction (backspace right after auto-correct + space)
+            if let autoWord = lastAutoInsertedWord, let originalWord = lastOriginalWord {
+                let context = textDocumentProxy.documentContextBeforeInput ?? ""
+                if context.hasSuffix(" ") {
+                    // Undo: remove space, remove auto-corrected word, restore original
+                    textDocumentProxy.deleteBackward() // remove space
+                    for _ in 0..<autoWord.count {
+                        textDocumentProxy.deleteBackward()
+                    }
+                    textDocumentProxy.insertText(originalWord)
 
-            // Update suggestions after deleting character
+                    lastAutoInsertedWord = nil
+                    lastOriginalWord = nil
+
+                    updateSuggestions()
+                    checkAutoCapitalization()
+                    return
+                }
+            }
+
+            // Normal delete
+            textDocumentProxy.deleteBackward()
+            lastAutoInsertedWord = nil
+            lastOriginalWord = nil
+
             updateSuggestions()
+            checkAutoCapitalization()
 
         case .shift:
             handleShift()
@@ -231,44 +262,62 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             advanceToNextInputMode()
 
         case .space:
-            // Add current word to context before inserting space
+            // Auto-insert top suggestion if the user is typing and there's a better match
             if let currentWord = getCurrentWord(), !currentWord.isEmpty {
-                contextTracker.addWord(currentWord)
-                print("DEBUG: Added '\(currentWord)' to context")
+                let suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
+
+                if let topSuggestion = suggestions.first,
+                   topSuggestion.lowercased() != currentWord.lowercased(),
+                   currentWord.count >= 2 {
+                    // Replace typed word with top suggestion
+                    for _ in 0..<currentWord.count {
+                        textDocumentProxy.deleteBackward()
+                    }
+                    textDocumentProxy.insertText(topSuggestion)
+
+                    // Store undo state
+                    lastAutoInsertedWord = topSuggestion
+                    lastOriginalWord = currentWord
+
+                    contextTracker.addWord(topSuggestion)
+                } else {
+                    contextTracker.addWord(currentWord)
+                    lastAutoInsertedWord = nil
+                    lastOriginalWord = nil
+                }
+            } else {
+                lastAutoInsertedWord = nil
+                lastOriginalWord = nil
             }
 
             textDocumentProxy.insertText(" ")
-
-            // Show next word predictions after space
             updateSuggestions()
+            checkAutoCapitalization()
 
         case .return:
             textDocumentProxy.insertText("\n")
-
-            // Clear context and suggestions after return (new line = new sentence)
             contextTracker.clear()
+            lastAutoInsertedWord = nil
+            lastOriginalWord = nil
             suggestionBar.updateSuggestions([])
+            checkAutoCapitalization()
 
         case .numbers:
             toggleNumbersMode()
 
         case .emoji:
-            // Switch to system emoji keyboard
             advanceToNextInputMode()
         }
     }
 
     private func handleShift() {
         if isCapsLocked {
-            // Third tap = turn off caps lock
             isCapsLocked = false
             isShifted = false
         } else if isShifted {
-            // Second tap = caps lock
             isCapsLocked = true
             isShifted = true
         } else {
-            // First tap = shift
             isShifted = true
             isCapsLocked = false
         }

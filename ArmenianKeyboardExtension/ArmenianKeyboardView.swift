@@ -47,11 +47,15 @@ class ArmenianKeyboardView: UIView {
     private var originalKeyBackgrounds: [UIButton: UIColor] = [:]
     private let trackpadGreyColor = UIColor(red: 81/255, green: 81/255, blue: 81/255, alpha: 1.0)
 
+    // Haptic feedback
+    private let hapticGenerator = UIImpactFeedbackGenerator(style: .light)
+
     // MARK: - Initialization
     init(layout: ArmenianKeyboardLayout) {
         self.layout = layout
         super.init(frame: .zero)
         setupKeyboard()
+        hapticGenerator.prepare()
     }
 
     required init?(coder: NSCoder) {
@@ -293,6 +297,21 @@ class ArmenianKeyboardView: UIView {
             return
         }
 
+        // Haptic feedback on every key press
+        hapticGenerator.impactOccurred()
+        hapticGenerator.prepare()
+
+        // Key click sound (skip for shift and globe to match Apple behavior)
+        let allKeys = getAllKeys()
+        if sender.tag < allKeys.count {
+            switch allKeys[sender.tag].type {
+            case .shift, .globe:
+                break
+            default:
+                AudioServicesPlaySystemSound(1104)
+            }
+        }
+
         // If delete key, handle it immediately for instant response
         if sender == deleteButton {
             sender.alpha = 0.3
@@ -431,7 +450,24 @@ class ArmenianKeyboardView: UIView {
     func updateShiftState(isShifted: Bool, isCapsLocked: Bool) {
         self.isShifted = isShifted
         self.isCapsLocked = isCapsLocked
-        refreshKeyboard()
+
+        // Update button titles in-place instead of rebuilding the entire keyboard
+        let allKeys = getAllKeys()
+        for (index, button) in keyButtons.enumerated() {
+            guard index < allKeys.count else { break }
+            switch allKeys[index].type {
+            case .character(let char):
+                let displayText = (isShifted || isCapsLocked) ? layout.uppercased(char) : char
+                button.setTitle(displayText, for: .normal)
+            case .shift:
+                button.setTitle(isCapsLocked ? "⇪" : "⇧", for: .normal)
+                button.backgroundColor = (isShifted || isCapsLocked)
+                    ? KeyboardColors.shiftActiveBackground
+                    : KeyboardColors.specialKeyBackground
+            default:
+                break
+            }
+        }
     }
 
     func setNumbersMode(_ enabled: Bool) {
@@ -462,72 +498,89 @@ class ArmenianKeyboardView: UIView {
 
     // MARK: - Key Popup
     private func showKeyPopup(for button: UIButton, with text: String) {
-        // Remove existing popup if any
         hideKeyPopup()
 
-        // Don't show popup for special keys (shift, delete, return, etc.)
-        // Only show for character keys and space
+        // Only show popup for character keys (not space, shift, delete, etc.)
         let keys = getAllKeys()
         guard button.tag < keys.count else { return }
-        let key = keys[button.tag]
+        guard case .character = keys[button.tag].type else { return }
 
-        switch key.type {
-        case .character, .space:
-            break // Show popup for these
-        default:
-            return // Don't show popup for special keys
-        }
+        let buttonFrame = button.convert(button.bounds, to: self)
 
-        // Create popup view
-        let popup = UIView()
-        popup.backgroundColor = KeyboardColors.popupBackground
-        popup.layer.cornerRadius = 5
-        popup.layer.shadowColor = KeyboardColors.keyShadow.cgColor
-        popup.layer.shadowOffset = CGSize(width: 0, height: 2)
-        popup.layer.shadowOpacity = 0.3
-        popup.layer.shadowRadius = 4
-        popup.translatesAutoresizingMaskIntoConstraints = false
+        // Popup dimensions — wider than the key, with a stem connecting to it
+        let popupWidth: CGFloat = max(buttonFrame.width + 16, 48)
+        let popupHeight: CGFloat = 54
+        let stemHeight: CGFloat = buttonFrame.height * 0.45
+        let cornerRadius: CGFloat = 8
+        let totalHeight = popupHeight + stemHeight
 
-        // Create label for the character
-        let label = UILabel()
+        // Position popup centered above button, clamped to keyboard edges
+        var popupX = buttonFrame.midX - popupWidth / 2
+        popupX = max(2, min(popupX, bounds.width - popupWidth - 2))
+
+        let popup = UIView(frame: CGRect(
+            x: popupX,
+            y: buttonFrame.minY - totalHeight,
+            width: popupWidth,
+            height: totalHeight
+        ))
+        popup.backgroundColor = .clear
+
+        // Build balloon shape with stem
+        let path = UIBezierPath()
+        let stemWidth: CGFloat = buttonFrame.width
+        let stemLeft = buttonFrame.midX - popup.frame.minX - stemWidth / 2
+        let stemRight = stemLeft + stemWidth
+        let stemCR: CGFloat = 4 // stem corner radius
+
+        path.move(to: CGPoint(x: stemLeft + stemCR, y: totalHeight))
+        path.addLine(to: CGPoint(x: stemRight - stemCR, y: totalHeight))
+        path.addQuadCurve(to: CGPoint(x: stemRight, y: totalHeight - stemCR),
+                          controlPoint: CGPoint(x: stemRight, y: totalHeight))
+
+        // Right stem curves into popup body
+        path.addCurve(to: CGPoint(x: popupWidth, y: popupHeight - cornerRadius),
+                      controlPoint1: CGPoint(x: stemRight, y: popupHeight + stemHeight * 0.2),
+                      controlPoint2: CGPoint(x: popupWidth, y: popupHeight))
+        // Top-right corner
+        path.addArc(withCenter: CGPoint(x: popupWidth - cornerRadius, y: cornerRadius),
+                    radius: cornerRadius, startAngle: 0, endAngle: -.pi / 2, clockwise: false)
+        // Top-left corner
+        path.addArc(withCenter: CGPoint(x: cornerRadius, y: cornerRadius),
+                    radius: cornerRadius, startAngle: -.pi / 2, endAngle: -.pi, clockwise: false)
+        // Left side curves into stem
+        path.addCurve(to: CGPoint(x: stemLeft, y: totalHeight - stemCR),
+                      controlPoint1: CGPoint(x: 0, y: popupHeight),
+                      controlPoint2: CGPoint(x: stemLeft, y: popupHeight + stemHeight * 0.2))
+        path.addQuadCurve(to: CGPoint(x: stemLeft + stemCR, y: totalHeight),
+                          controlPoint: CGPoint(x: stemLeft, y: totalHeight))
+        path.close()
+
+        let shapeLayer = CAShapeLayer()
+        shapeLayer.path = path.cgPath
+        shapeLayer.fillColor = KeyboardColors.popupBackground.resolvedColor(with: traitCollection).cgColor
+        shapeLayer.shadowColor = UIColor.black.cgColor
+        shapeLayer.shadowOffset = CGSize(width: 0, height: 2)
+        shapeLayer.shadowOpacity = 0.25
+        shapeLayer.shadowRadius = 4
+        popup.layer.addSublayer(shapeLayer)
+
+        // Character label centered in the balloon body (above stem)
+        let label = UILabel(frame: CGRect(x: 0, y: 0, width: popupWidth, height: popupHeight))
         label.text = text
         label.textColor = KeyboardColors.popupText
-        label.font = .systemFont(ofSize: 28, weight: .regular)
+        label.font = .systemFont(ofSize: 32, weight: .light)
         label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-
         popup.addSubview(label)
 
-        // Add popup to the main view
         addSubview(popup)
         keyPopupView = popup
 
-        // Get button's position in this view
-        let buttonFrame = button.convert(button.bounds, to: self)
-
-        // Popup dimensions - smaller
-        let popupWidth: CGFloat = 44
-        let popupHeight: CGFloat = 52
-
-        // Position popup above and centered on the button
-        NSLayoutConstraint.activate([
-            popup.widthAnchor.constraint(equalToConstant: popupWidth),
-            popup.heightAnchor.constraint(equalToConstant: popupHeight),
-            popup.centerXAnchor.constraint(equalTo: leadingAnchor, constant: buttonFrame.midX),
-            popup.bottomAnchor.constraint(equalTo: topAnchor, constant: buttonFrame.minY - 8)
-        ])
-
-        // Center label in popup
-        NSLayoutConstraint.activate([
-            label.centerXAnchor.constraint(equalTo: popup.centerXAnchor),
-            label.centerYAnchor.constraint(equalTo: popup.centerYAnchor, constant: -5)
-        ])
-
-        // Animate popup appearance
-        popup.transform = CGAffineTransform(scaleX: 0.3, y: 0.3)
+        // Animate in
+        popup.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+            .concatenating(CGAffineTransform(translationX: 0, y: 10))
         popup.alpha = 0
-
-        UIView.animate(withDuration: 0.08, delay: 0, options: .curveEaseOut) {
+        UIView.animate(withDuration: 0.06, delay: 0, options: .curveEaseOut) {
             popup.transform = .identity
             popup.alpha = 1.0
         }
