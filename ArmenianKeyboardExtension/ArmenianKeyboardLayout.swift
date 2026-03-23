@@ -94,20 +94,23 @@ class ArmenianKeyboardLayout {
         }
     }
 
-    func getBottomRow(numbersMode: Bool = false) -> [KeyboardKey] {
-        if numbersMode {
-            return [
-                KeyboardKey(type: .numbers, displayText: "ԱԲԳ", width: .wide),
-                KeyboardKey(type: .space, displayText: "space", width: .extraWide),
-                KeyboardKey(type: .return, displayText: "⏎", width: .wide)
-            ]
-        } else {
-            return [
-                KeyboardKey(type: .numbers, displayText: "123", width: .wide),
-                KeyboardKey(type: .space, displayText: "space", width: .extraWide),
-                KeyboardKey(type: .return, displayText: "⏎", width: .wide)
-            ]
+    func getBottomRow(numbersMode: Bool = false, showGlobeKey: Bool = true) -> [KeyboardKey] {
+        var keys: [KeyboardKey] = []
+
+        keys.append(KeyboardKey(
+            type: .numbers,
+            displayText: numbersMode ? "ԱԲԳ" : "123",
+            width: .wide
+        ))
+
+        if showGlobeKey {
+            keys.append(KeyboardKey(type: .globe, displayText: "🌐", width: .standard))
         }
+
+        keys.append(KeyboardKey(type: .space, displayText: "space", width: .extraWide))
+        keys.append(KeyboardKey(type: .return, displayText: "⏎", width: .wide))
+
+        return keys
     }
 
     // Uppercase mapping for Armenian letters

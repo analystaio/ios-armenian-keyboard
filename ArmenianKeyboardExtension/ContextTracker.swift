@@ -28,7 +28,6 @@ class ContextTracker {
             wordHistory.removeFirst()
         }
 
-        print("DEBUG: Word history updated: \(wordHistory)")
     }
 
     /// Returns the most recent word (for bigram predictions)
@@ -44,7 +43,6 @@ class ContextTracker {
 
     /// Clears the context (e.g., on sentence boundary)
     func clear() {
-        print("DEBUG: Context cleared")
         wordHistory.removeAll()
     }
 

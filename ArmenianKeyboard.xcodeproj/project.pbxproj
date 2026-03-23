@@ -23,6 +23,8 @@
 		CB5DE26F4A961B44AAA15AD9 /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6963DE9C816940449A5A56 /* ContextTracker.swift */; };
 KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = KC0000020000000000000001 /* KeyboardColors.swift */; };
 		NG0000010000000000000001 /* armenian_ngram.json in Resources */ = {isa = PBXBuildFile; fileRef = NG0000020000000000000001 /* armenian_ngram.json */; };
+		PV0000010000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PV0000020000000000000001 /* PrivacyInfo.xcprivacy */; };
+		PV0000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PV0000040000000000000001 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -69,6 +71,8 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 		CF6963DE9C816940449A5A56 /* ContextTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextTracker.swift; sourceTree = "<group>"; };
 KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardColors.swift; sourceTree = "<group>"; };
 		NG0000020000000000000001 /* armenian_ngram.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = armenian_ngram.json; sourceTree = "<group>"; };
+		PV0000020000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		PV0000040000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +109,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 				AA0000040000000000000001 /* ContentView.swift */,
 				AA0000ASSETS0000000000001 /* Assets.xcassets */,
 				AA0000060000000000000001 /* Info.plist */,
+				PV0000020000000000000001 /* PrivacyInfo.xcprivacy */,
 			);
 			path = ArmenianKeyboard;
 			sourceTree = "<group>";
@@ -125,6 +130,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 KC0000020000000000000001 /* KeyboardColors.swift */,
 				NG0000020000000000000001 /* armenian_ngram.json */,
 				AA0000310000000000000001 /* Info.plist */,
+				PV0000040000000000000001 /* PrivacyInfo.xcprivacy */,
 			);
 			path = ArmenianKeyboardExtension;
 			sourceTree = "<group>";
@@ -220,6 +226,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			buildActionMask = 2147483647;
 			files = (
 				AA0000ASSETSBUILD0000001 /* Assets.xcassets in Resources */,
+				PV0000010000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -228,6 +235,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			buildActionMask = 2147483647;
 			files = (
 NG0000010000000000000001 /* armenian_ngram.json in Resources */,
+				PV0000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,7 +421,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -444,7 +452,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -467,7 +475,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.Extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -491,7 +499,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.Extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

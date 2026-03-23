@@ -42,7 +42,7 @@ struct ContentView: View {
                         InstructionStep(
                             number: 1,
                             title: "Open Settings",
-                            description: "Go to Settings on your iPhone or iPad"
+                            description: "Go to Settings on your iPhone"
                         )
 
                         InstructionStep(
@@ -106,6 +106,19 @@ struct ContentView: View {
                     }
                     .padding(.horizontal)
                     .padding(.top, 20)
+
+                    // Privacy Policy
+                    Button(action: {
+                        if let url = URL(string: "https://analysta.io/armenian-keyboard/privacy") {
+                            UIApplication.shared.open(url)
+                        }
+                    }) {
+                        Text("Privacy Policy")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 8)
                 }
                 .padding(.bottom, 30)
             }
