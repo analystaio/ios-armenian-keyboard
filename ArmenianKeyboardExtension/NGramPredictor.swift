@@ -15,25 +15,37 @@ class NGramPredictor {
     private var bigram:   [String: [String]] = [:]  // "w1"       -> [next words]
     private var unigram:  [String] = []             // top words overall
 
+    /// Called on main thread once the model finishes loading
+    var onReady: (() -> Void)?
+
     init() {
-        loadModel()
+        loadModelAsync()
     }
 
-    private func loadModel() {
-        guard let url = Bundle.main.url(forResource: "armenian_ngram", withExtension: "json"),
-              let data = try? Data(contentsOf: url),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
-        else {
-            print("DEBUG: NGramPredictor - failed to load armenian_ngram.json")
-            return
+    private func loadModelAsync() {
+        DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+            guard let url = Bundle.main.url(forResource: "armenian_ngram", withExtension: "json"),
+                  let data = try? Data(contentsOf: url),
+                  let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+            else {
+                print("DEBUG: NGramPredictor - failed to load armenian_ngram.json")
+                return
+            }
+
+            let fg = json["4gram"] as? [String: [String]] ?? [:]
+            let tg = json["3gram"] as? [String: [String]] ?? [:]
+            let bg = json["2gram"] as? [String: [String]] ?? [:]
+            let ug = json["1gram"] as? [String] ?? []
+
+            DispatchQueue.main.async {
+                self?.fourgram = fg
+                self?.trigram  = tg
+                self?.bigram   = bg
+                self?.unigram  = ug
+                print("DEBUG: NGramPredictor loaded async — 4g:\(fg.count) 3g:\(tg.count) 2g:\(bg.count) vocab:\(ug.count)")
+                self?.onReady?()
+            }
         }
-
-        fourgram = json["4gram"] as? [String: [String]] ?? [:]
-        trigram  = json["3gram"] as? [String: [String]] ?? [:]
-        bigram   = json["2gram"] as? [String: [String]] ?? [:]
-        unigram  = json["1gram"] as? [String] ?? []
-
-        print("DEBUG: NGramPredictor loaded — 4g:\(fourgram.count) 3g:\(trigram.count) 2g:\(bigram.count) vocab:\(unigram.count)")
     }
 
     // Normalize Armenian ligature ев (U+0587) → ե+վ (U+0565+U+057E)
@@ -47,6 +59,7 @@ class NGramPredictor {
     ///   - context: Recent words in order (oldest → newest), e.g. ["ես", "քեզ", "շատ"]
     ///   - limit: Max suggestions to return
     func predictNext(context: [String], limit: Int = 3) -> [String] {
+        guard isReady else { return [] }
         let words = context.map { normalize($0).lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }
                            .filter { !$0.isEmpty }
 
