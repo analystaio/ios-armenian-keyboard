@@ -22,7 +22,7 @@ class ArmenianKeyboardView: UIView {
     private var isShifted = false
     private var isCapsLocked = false
     private var isNumbersMode = false
-    var showGlobeKey = true
+    var showGlobeKey = false
 
     private let keySpacing: CGFloat = 6
     private let rowSpacing: CGFloat = 12
