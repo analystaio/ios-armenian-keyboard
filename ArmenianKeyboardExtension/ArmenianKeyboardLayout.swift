@@ -12,6 +12,11 @@ enum ArmenianLayoutType {
     case western
 }
 
+enum KeyboardLanguage {
+    case armenian
+    case english
+}
+
 enum KeyType {
     case character(String)
     case delete
@@ -21,6 +26,7 @@ enum KeyType {
     case `return`
     case numbers
     case emoji
+    case languageToggle
 }
 
 struct KeyboardKey {
@@ -37,28 +43,39 @@ struct KeyboardKey {
 
 class ArmenianKeyboardLayout {
 
-    // Armenian QWERTY layout mapping
-    // Based on standard Eastern Armenian keyboard layout
+    var language: KeyboardLanguage = .armenian
 
-    let letterRows: [[String]] = [
-        // Row 1 - Standard Eastern Armenian layout
+    // Armenian QWERTY layout — Eastern Armenian
+    private let armenianLetterRows: [[String]] = [
         ["է", "թ", "փ", "ձ", "ջ", "ր", "չ", "ճ", "ժ", "ծ"],
-        // Row 2
         ["ք", "ո", "ե", "ռ", "տ", "ը", "ւ", "ի", "օ", "պ"],
-        // Row 3
         ["ա", "ս", "դ", "ֆ", "գ", "հ", "յ", "կ", "լ", "խ"],
-        // Row 4
         ["զ", "ղ", "ց", "վ", "բ", "ն", "մ", "շ"]
     ]
 
+    // English QWERTY
+    private let englishLetterRows: [[String]] = [
+        ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+        ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+        ["z", "x", "c", "v", "b", "n", "m"]
+    ]
+
     let numberRows: [[String]] = [
-        // Row 1
         ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"],
-        // Row 2
         ["-", "/", ":", ";", "(", ")", "֏", "&", "@", "\""],
-        // Row 3
         [".", ",", "?", "!", "'", "՝", "՞", "՜", "…"]
     ]
+
+    private var letterRows: [[String]] {
+        switch language {
+        case .armenian: return armenianLetterRows
+        case .english:  return englishLetterRows
+        }
+    }
+
+    func numberOfRows(numbersMode: Bool) -> Int {
+        return (numbersMode ? numberRows : letterRows).count
+    }
 
     func getKeys(forRow row: Int, numbersMode: Bool = false) -> [KeyboardKey] {
         let sourceRows = numbersMode ? numberRows : letterRows
@@ -66,29 +83,18 @@ class ArmenianKeyboardLayout {
         guard row < sourceRows.count else { return [] }
 
         let rowChars = sourceRows[row]
-
-        // In letter mode: row 3 (4th row) has shift and delete
-        // In numbers mode: row 2 (3rd row) has shift and delete
-        let isLastCharacterRow = numbersMode ? (row == 2) : (row == 3)
+        let isLastCharacterRow = row == sourceRows.count - 1
 
         if isLastCharacterRow {
             var keys: [KeyboardKey] = []
-
-            // Shift key
             keys.append(KeyboardKey(type: .shift, displayText: "⇧", width: .wide))
-
-            // Character keys
             for char in rowChars {
                 keys.append(KeyboardKey(type: .character(char), displayText: char, width: .standard))
             }
-
-            // Delete key
             keys.append(KeyboardKey(type: .delete, displayText: "⌫", width: .wide))
-
             return keys
         }
 
-        // Standard rows
         return rowChars.map { char in
             KeyboardKey(type: .character(char), displayText: char, width: .standard)
         }
@@ -97,9 +103,10 @@ class ArmenianKeyboardLayout {
     func getBottomRow(numbersMode: Bool = false, showGlobeKey: Bool = true) -> [KeyboardKey] {
         var keys: [KeyboardKey] = []
 
+        let alphaLabel = (language == .armenian) ? "ԱԲԳ" : "ABC"
         keys.append(KeyboardKey(
             type: .numbers,
-            displayText: numbersMode ? "ԱԲԳ" : "123",
+            displayText: numbersMode ? alphaLabel : "123",
             width: .wide
         ))
 
@@ -113,19 +120,30 @@ class ArmenianKeyboardLayout {
         return keys
     }
 
-    // Uppercase mapping for Armenian letters
-    func uppercased(_ char: String) -> String {
-        let lowercaseToUppercase: [String: String] = [
-            "ա": "Ա", "բ": "Բ", "գ": "Գ", "դ": "Դ", "ե": "Ե",
-            "զ": "Զ", "է": "Է", "ը": "Ը", "թ": "Թ", "ժ": "Ժ",
-            "ի": "Ի", "լ": "Լ", "խ": "Խ", "ծ": "Ծ", "կ": "Կ",
-            "հ": "Հ", "ձ": "Ձ", "ղ": "Ղ", "ճ": "Ճ", "մ": "Մ",
-            "յ": "Յ", "ն": "Ն", "շ": "Շ", "ո": "Ո", "չ": "Չ",
-            "պ": "Պ", "ջ": "Ջ", "ռ": "Ռ", "ս": "Ս", "վ": "Վ",
-            "տ": "Տ", "ր": "Ր", "ց": "Ց", "ւ": "Ւ", "փ": "Փ",
-            "ք": "Ք", "օ": "Օ", "ֆ": "Ֆ", "և": "ԵՒ"
-        ]
+    /// Per-row leading/trailing inset (points). Used by the view to indent
+    /// rows that have fewer keys (e.g. English row 2 has 9 letters and is
+    /// indented from each edge to match the iOS native keyboard).
+    func sideInset(forRow row: Int, numbersMode: Bool) -> CGFloat {
+        guard !numbersMode, language == .english else { return 0 }
+        // English: row 0 (10), row 1 (9), row 2 (shift+7+delete)
+        return row == 1 ? 18 : 0
+    }
 
-        return lowercaseToUppercase[char] ?? char.uppercased()
+    private static let armenianUppercase: [String: String] = [
+        "ա": "Ա", "բ": "Բ", "գ": "Գ", "դ": "Դ", "ե": "Ե",
+        "զ": "Զ", "է": "Է", "ը": "Ը", "թ": "Թ", "ժ": "Ժ",
+        "ի": "Ի", "լ": "Լ", "խ": "Խ", "ծ": "Ծ", "կ": "Կ",
+        "հ": "Հ", "ձ": "Ձ", "ղ": "Ղ", "ճ": "Ճ", "մ": "Մ",
+        "յ": "Յ", "ն": "Ն", "շ": "Շ", "ո": "Ո", "չ": "Չ",
+        "պ": "Պ", "ջ": "Ջ", "ռ": "Ռ", "ս": "Ս", "վ": "Վ",
+        "տ": "Տ", "ր": "Ր", "ց": "Ց", "ւ": "Ւ", "փ": "Փ",
+        "ք": "Ք", "օ": "Օ", "ֆ": "Ֆ", "և": "ԵՒ"
+    ]
+
+    func uppercased(_ char: String) -> String {
+        if let mapped = Self.armenianUppercase[char] {
+            return mapped
+        }
+        return char.uppercased()
     }
 }

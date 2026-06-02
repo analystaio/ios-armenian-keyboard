@@ -84,18 +84,10 @@ class ArmenianKeyboardView: UIView {
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
         ])
 
-        // Row 1
-        stackView.addArrangedSubview(createRow(0))
-
-        // Row 2
-        stackView.addArrangedSubview(createRow(1))
-
-        // Row 3
-        stackView.addArrangedSubview(createRow(2))
-
-        // Row 4 - Additional letters (only in letter mode, not in numbers mode)
-        if !isNumbersMode {
-            stackView.addArrangedSubview(createRow(3))
+        // Letter/number rows (row count depends on layout + mode)
+        let rowCount = layout.numberOfRows(numbersMode: isNumbersMode)
+        for i in 0..<rowCount {
+            stackView.addArrangedSubview(createRow(i))
         }
 
         // Bottom row
@@ -122,10 +114,12 @@ class ArmenianKeyboardView: UIView {
 
         containerView.addSubview(rowView)
 
-        // All rows extend the full width
+        // Some rows (e.g. English row 2 with 9 letters) are indented from the
+        // edges to match iOS native keyboard layout.
+        let inset = layout.sideInset(forRow: rowIndex, numbersMode: isNumbersMode)
         NSLayoutConstraint.activate([
-            rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: inset),
+            rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -inset),
             rowView.topAnchor.constraint(equalTo: containerView.topAnchor),
             rowView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
@@ -226,8 +220,8 @@ class ArmenianKeyboardView: UIView {
         button.layer.cornerRadius = 5
         button.layer.shadowColor = KeyboardColors.keyShadow.cgColor
         button.layer.shadowOffset = CGSize(width: 0, height: 1)
-        button.layer.shadowOpacity = 0.3
-        button.layer.shadowRadius = 0.5
+        button.layer.shadowOpacity = 1.0
+        button.layer.shadowRadius = 0
 
         // Add touch handlers
         button.addTarget(self, action: #selector(keyTapped(_:)), for: .touchUpInside)
@@ -265,7 +259,7 @@ class ArmenianKeyboardView: UIView {
 
     private func getKeyBackgroundColor(for keyType: KeyType) -> UIColor {
         switch keyType {
-        case .shift, .delete, .numbers, .emoji, .return:
+        case .shift, .delete, .numbers, .emoji, .return, .languageToggle:
             return KeyboardColors.specialKeyBackground
         case .character, .space, .globe:
             return KeyboardColors.keyBackground
@@ -476,6 +470,11 @@ class ArmenianKeyboardView: UIView {
         refreshKeyboard()
     }
 
+    /// Rebuild the keyboard after the layout's language changes.
+    func refreshAfterLanguageChange() {
+        refreshKeyboard()
+    }
+
     private func refreshKeyboard() {
         // Remove all subviews
         subviews.forEach { $0.removeFromSuperview() }
@@ -488,7 +487,8 @@ class ArmenianKeyboardView: UIView {
     private func getAllKeys() -> [KeyboardKey] {
         var allKeys: [KeyboardKey] = []
 
-        for i in 0..<4 {
+        let rowCount = layout.numberOfRows(numbersMode: isNumbersMode)
+        for i in 0..<rowCount {
             allKeys.append(contentsOf: layout.getKeys(forRow: i, numbersMode: isNumbersMode))
         }
 

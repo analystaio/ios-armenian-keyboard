@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Armenian</string>
+	<string>Armenian Transliteration</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -21,13 +21,13 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>KeyboardMode</key>
-	<string>armenian</string>
+	<string>transliteration</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionAttributes</key>
 		<dict>
 			<key>IsASCIICapable</key>
-			<false/>
+			<true/>
 			<key>PrefersRightToLeft</key>
 			<false/>
 			<key>PrimaryLanguage</key>

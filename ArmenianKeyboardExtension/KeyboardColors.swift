@@ -82,7 +82,7 @@ struct KeyboardColors {
     static var keyShadow: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor.black
+                ? UIColor.black.withAlphaComponent(0.5)
                 : UIColor.black.withAlphaComponent(0.3)
         }
     }

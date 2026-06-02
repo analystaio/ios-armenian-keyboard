@@ -35,19 +35,41 @@ class KeyboardViewController: UIInputViewController {
     private let armenianLayout = ArmenianKeyboardLayout()
     private let wordPredictor = ArmenianWordPredictor()
     private let ngramPredictor = NGramPredictor()
+    private let transliterationPredictor = TransliterationPredictor()
     private let contextTracker = ContextTracker()
     private var isShifted = false
     private var isCapsLocked = false
     private var isNumbersMode = false
+    private var currentLanguage: KeyboardLanguage = .armenian
 
     // Auto-correction undo state
     private var lastAutoInsertedWord: String?
     private var lastOriginalWord: String?
 
+    private static func containsArmenian(_ s: String) -> Bool {
+        for scalar in s.unicodeScalars {
+            let v = scalar.value
+            if (0x0531...0x058F).contains(v) || (0xFB13...0xFB17).contains(v) {
+                return true
+            }
+        }
+        return false
+    }
+
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        applyExtensionMode()
         setupKeyboard()
+    }
+
+    /// Each extension target ships its own Info.plist with a `KeyboardMode`
+    /// key that pins the keyboard to either Armenian or English-input
+    /// transliteration. The shared sources read it once at launch.
+    private func applyExtensionMode() {
+        let mode = Bundle.main.object(forInfoDictionaryKey: "KeyboardMode") as? String
+        currentLanguage = (mode == "transliteration") ? .english : .armenian
+        armenianLayout.language = currentLanguage
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -77,11 +99,13 @@ class KeyboardViewController: UIInputViewController {
         }
         view.addSubview(suggestionBar)
 
-        // Setup keyboard view
+        // Setup keyboard view. Render the globe key only when the user has
+        // multiple keyboards installed (e.g. our two extensions) so they can
+        // switch between them. iOS sets needsInputModeSwitchKey accordingly.
         keyboardView = ArmenianKeyboardView(layout: armenianLayout)
         keyboardView.translatesAutoresizingMaskIntoConstraints = false
         keyboardView.delegate = self
-        keyboardView.showGlobeKey = false
+        keyboardView.showGlobeKey = needsInputModeSwitchKey
         view.addSubview(keyboardView)
 
         // Layout constraints
@@ -99,6 +123,11 @@ class KeyboardViewController: UIInputViewController {
 
         // Refresh suggestions once n-gram model finishes loading
         ngramPredictor.onReady = { [weak self] in
+            self?.updateSuggestions()
+        }
+
+        // Same for the transliteration index
+        transliterationPredictor.onReady = { [weak self] in
             self?.updateSuggestions()
         }
     }
@@ -161,9 +190,24 @@ class KeyboardViewController: UIInputViewController {
 
         // Scenario 1: User is typing a word (prefix completion)
         if let currentWord = getCurrentWord(), !currentWord.isEmpty {
-            suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
+            switch currentLanguage {
+            case .armenian:
+                suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
+            case .english:
+                // [top transliteration, literal Latin, second transliteration]
+                let armenian = transliterationPredictor.suggestions(for: currentWord, limit: 2)
+                if let top = armenian.first {
+                    suggestions.append(top)
+                    suggestions.append(currentWord)
+                    if armenian.count > 1 {
+                        suggestions.append(armenian[1])
+                    }
+                } else {
+                    suggestions = [currentWord]
+                }
+            }
         }
-        // Scenario 2: User just finished a word (next word prediction)
+        // Scenario 2: User just finished a word (next word prediction — Armenian only)
         else if contextTracker.getLastWord() != nil {
             let context = contextTracker.getLastWords(count: 3)
             suggestions = ngramPredictor.predictNext(context: context, limit: 3)
@@ -196,7 +240,11 @@ class KeyboardViewController: UIInputViewController {
         textDocumentProxy.insertText(suggestion)
         textDocumentProxy.insertText(" ")
 
-        contextTracker.addWord(suggestion)
+        // n-gram context is Armenian-only; tapping the literal Latin
+        // suggestion in English mode shouldn't pollute it.
+        if Self.containsArmenian(suggestion) {
+            contextTracker.addWord(suggestion)
+        }
         updateSuggestions()
         checkAutoCapitalization()
     }
@@ -265,24 +313,34 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
         case .space:
             // Auto-insert top suggestion if the user is typing and there's a better match
             if let currentWord = getCurrentWord(), !currentWord.isEmpty {
-                let suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
+                let topSuggestion: String?
+                switch currentLanguage {
+                case .armenian:
+                    topSuggestion = wordPredictor.getSuggestions(for: currentWord, limit: 1).first
+                case .english:
+                    topSuggestion = transliterationPredictor.suggestions(for: currentWord, limit: 1).first
+                }
 
-                if let topSuggestion = suggestions.first,
-                   topSuggestion.lowercased() != currentWord.lowercased(),
+                if let top = topSuggestion,
+                   top.lowercased() != currentWord.lowercased(),
                    currentWord.count >= 2 {
                     // Replace typed word with top suggestion
                     for _ in 0..<currentWord.count {
                         textDocumentProxy.deleteBackward()
                     }
-                    textDocumentProxy.insertText(topSuggestion)
+                    textDocumentProxy.insertText(top)
 
                     // Store undo state
-                    lastAutoInsertedWord = topSuggestion
+                    lastAutoInsertedWord = top
                     lastOriginalWord = currentWord
 
-                    contextTracker.addWord(topSuggestion)
+                    contextTracker.addWord(top)
                 } else {
-                    contextTracker.addWord(currentWord)
+                    // No replace. Track the typed word only if it's Armenian
+                    // (Latin words in English mode shouldn't enter n-gram context).
+                    if Self.containsArmenian(currentWord) {
+                        contextTracker.addWord(currentWord)
+                    }
                     lastAutoInsertedWord = nil
                     lastOriginalWord = nil
                 }
@@ -308,6 +366,9 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
 
         case .emoji:
             advanceToNextInputMode()
+
+        case .languageToggle:
+            break  // Per-extension fixed mode; toggle key is no longer rendered.
         }
     }
 
