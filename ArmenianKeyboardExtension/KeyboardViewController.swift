@@ -36,6 +36,9 @@ class KeyboardViewController: UIInputViewController {
     private let wordPredictor = ArmenianWordPredictor()
     private let ngramPredictor = NGramPredictor()
     private let contextTracker = ContextTracker()
+    private let emojiStore = EmojiStore()
+    private var emojiView: EmojiKeyboardView!
+    private var isEmojiMode = false
     private var isShifted = false
     private var isCapsLocked = false
     private var isNumbersMode = false
@@ -93,9 +96,42 @@ class KeyboardViewController: UIInputViewController {
             keyboardView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
+        // Emoji panel covers the whole input view, hidden until the emoji key is tapped
+        emojiView = EmojiKeyboardView(store: emojiStore)
+        emojiView.delegate = self
+        emojiView.isHidden = true
+        emojiView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(emojiView)
+
+        NSLayoutConstraint.activate([
+            emojiView.topAnchor.constraint(equalTo: view.topAnchor),
+            emojiView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            emojiView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            emojiView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
         // Refresh suggestions once n-gram model finishes loading
         ngramPredictor.onReady = { [weak self] in
             self?.updateSuggestions()
+        }
+    }
+
+    // MARK: - Emoji Mode
+    private func setEmojiMode(_ enabled: Bool) {
+        isEmojiMode = enabled
+
+        if enabled {
+            // Rebuild so the recents section reflects anything used since last time
+            emojiView.reloadSections()
+        }
+
+        emojiView.isHidden = !enabled
+        keyboardView.isHidden = enabled
+        suggestionBar.isHidden = enabled
+
+        if !enabled {
+            updateSuggestions()
+            checkAutoCapitalization()
         }
     }
 
@@ -146,6 +182,9 @@ class KeyboardViewController: UIInputViewController {
 
     // MARK: - Suggestions
     private func updateSuggestions() {
+        // The emoji panel hides the suggestion bar; nothing to refresh behind it
+        guard !isEmojiMode else { return }
+
         // Check if document is completely empty (all text deleted)
         let documentContext = textDocumentProxy.documentContextBeforeInput
         if documentContext != nil && documentContext!.isEmpty {
@@ -191,6 +230,23 @@ class KeyboardViewController: UIInputViewController {
         contextTracker.addWord(suggestion)
         updateSuggestions()
         checkAutoCapitalization()
+    }
+}
+
+// MARK: - EmojiKeyboardViewDelegate
+extension KeyboardViewController: EmojiKeyboardViewDelegate {
+    func emojiKeyboardView(_ view: EmojiKeyboardView, didSelect emoji: String) {
+        textDocumentProxy.insertText(emoji)
+        // An emoji ends the current word for prediction purposes
+        contextTracker.clear()
+    }
+
+    func emojiKeyboardViewDidTapDelete(_ view: EmojiKeyboardView) {
+        textDocumentProxy.deleteBackward()
+    }
+
+    func emojiKeyboardViewDidTapLetters(_ view: EmojiKeyboardView) {
+        setEmojiMode(false)
     }
 }
 
@@ -247,7 +303,7 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             toggleNumbersMode()
 
         case .emoji:
-            advanceToNextInputMode()
+            setEmojiMode(true)
         }
     }
 

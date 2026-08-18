@@ -22,6 +22,9 @@
 		NBFE47B040DD9E448FB8F2C7 /* NGramPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */; };
 		CB5DE26F4A961B44AAA15AD9 /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6963DE9C816940449A5A56 /* ContextTracker.swift */; };
 KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = KC0000020000000000000001 /* KeyboardColors.swift */; };
+		EM0000010000000000000001 /* EmojiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EM0000020000000000000001 /* EmojiData.swift */; };
+		EM0000030000000000000001 /* EmojiKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EM0000040000000000000001 /* EmojiKeyboardView.swift */; };
+		EM0000050000000000000001 /* emoji.json in Resources */ = {isa = PBXBuildFile; fileRef = EM0000060000000000000001 /* emoji.json */; };
 		NG0000010000000000000001 /* armenian_ngram.json in Resources */ = {isa = PBXBuildFile; fileRef = NG0000020000000000000001 /* armenian_ngram.json */; };
 		PV0000010000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PV0000020000000000000001 /* PrivacyInfo.xcprivacy */; };
 		PV0000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PV0000040000000000000001 /* PrivacyInfo.xcprivacy */; };
@@ -68,6 +71,9 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 		AA0000ASSETS0000000000001 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BigramDictionary.swift; sourceTree = "<group>"; };
 		NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NGramPredictor.swift; sourceTree = "<group>"; };
+		EM0000020000000000000001 /* EmojiData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiData.swift; sourceTree = "<group>"; };
+		EM0000040000000000000001 /* EmojiKeyboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiKeyboardView.swift; sourceTree = "<group>"; };
+		EM0000060000000000000001 /* emoji.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = emoji.json; sourceTree = "<group>"; };
 		CF6963DE9C816940449A5A56 /* ContextTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContextTracker.swift; sourceTree = "<group>"; };
 KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardColors.swift; sourceTree = "<group>"; };
 		NG0000020000000000000001 /* armenian_ngram.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = armenian_ngram.json; sourceTree = "<group>"; };
@@ -128,7 +134,10 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 				NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */,
 				CF6963DE9C816940449A5A56 /* ContextTracker.swift */,
 KC0000020000000000000001 /* KeyboardColors.swift */,
+				EM0000020000000000000001 /* EmojiData.swift */,
+				EM0000040000000000000001 /* EmojiKeyboardView.swift */,
 				NG0000020000000000000001 /* armenian_ngram.json */,
+				EM0000060000000000000001 /* emoji.json */,
 				AA0000310000000000000001 /* Info.plist */,
 				PV0000040000000000000001 /* PrivacyInfo.xcprivacy */,
 			);
@@ -235,6 +244,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			buildActionMask = 2147483647;
 			files = (
 NG0000010000000000000001 /* armenian_ngram.json in Resources */,
+				EM0000050000000000000001 /* emoji.json in Resources */,
 				PV0000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -266,6 +276,8 @@ NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 				NBFE47B040DD9E448FB8F2C7 /* NGramPredictor.swift in Sources */,
 				CB5DE26F4A961B44AAA15AD9 /* ContextTracker.swift in Sources */,
 KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
+				EM0000010000000000000001 /* EmojiData.swift in Sources */,
+				EM0000030000000000000001 /* EmojiKeyboardView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

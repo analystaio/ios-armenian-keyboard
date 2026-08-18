@@ -103,6 +103,8 @@ class ArmenianKeyboardLayout {
             width: .wide
         ))
 
+        keys.append(KeyboardKey(type: .emoji, displayText: "", width: .standard))
+
         if showGlobeKey {
             keys.append(KeyboardKey(type: .globe, displayText: "🌐", width: .standard))
         }
