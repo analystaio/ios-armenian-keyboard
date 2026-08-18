@@ -4,7 +4,7 @@ The task is to develop an iOS app that adds a Armenian keyboard with a word sugg
 
 ## Notes
 
-- When unsure about something do websearch and also ask codex `codex --config model_reasoning_effort="high" exec "<your question>"`
+- When unsure about something do websearch
 - Ask questions to clarify unknowns. Strive not to make assumptions
 
 ## Arch Linux Training Machine
