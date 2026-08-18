@@ -223,11 +223,7 @@ class ArmenianKeyboardView: UIView {
 
         // Background styling - match iOS appearance
         button.backgroundColor = getKeyBackgroundColor(for: key.type)
-        button.layer.cornerRadius = 5
-        button.layer.shadowColor = KeyboardColors.keyShadow.cgColor
-        button.layer.shadowOffset = CGSize(width: 0, height: 1)
-        button.layer.shadowOpacity = 0.3
-        button.layer.shadowRadius = 0.5
+        button.layer.cornerRadius = KeyboardColors.keyCornerRadius
 
         // Add touch handlers
         button.addTarget(self, action: #selector(keyTapped(_:)), for: .touchUpInside)
@@ -270,6 +266,33 @@ class ArmenianKeyboardView: UIView {
         case .character, .space, .globe:
             return KeyboardColors.keyBackground
         }
+    }
+
+    private func getKeyHighlightColor(for keyType: KeyType) -> UIColor {
+        switch keyType {
+        case .shift, .delete, .numbers, .emoji, .return:
+            return KeyboardColors.specialKeyHighlight
+        case .character, .space, .globe:
+            return KeyboardColors.keyHighlight
+        }
+    }
+
+    /// Resting background for a button, accounting for the shift key's active state.
+    private func restingBackgroundColor(for sender: UIButton) -> UIColor {
+        let allKeys = getAllKeys()
+        guard sender.tag < allKeys.count else { return KeyboardColors.keyBackground }
+        let keyType = allKeys[sender.tag].type
+
+        if case .shift = keyType, isShifted || isCapsLocked {
+            return KeyboardColors.shiftActiveBackground
+        }
+        return getKeyBackgroundColor(for: keyType)
+    }
+
+    private func highlightBackgroundColor(for sender: UIButton) -> UIColor {
+        let allKeys = getAllKeys()
+        guard sender.tag < allKeys.count else { return KeyboardColors.keyHighlight }
+        return getKeyHighlightColor(for: allKeys[sender.tag].type)
     }
 
     // MARK: - Actions
@@ -315,7 +338,7 @@ class ArmenianKeyboardView: UIView {
 
         // If delete key, handle it immediately for instant response
         if sender == deleteButton {
-            sender.alpha = 0.3
+            sender.backgroundColor = highlightBackgroundColor(for: sender)
             isDeleteButtonHeld = true
 
             // Delete immediately on press
@@ -335,7 +358,7 @@ class ArmenianKeyboardView: UIView {
 
         // For other keys, show visual feedback
         UIView.animate(withDuration: 0.05) {
-            sender.alpha = 0.3
+            sender.backgroundColor = self.highlightBackgroundColor(for: sender)
         }
 
         // Show popup with the key's text
@@ -347,7 +370,7 @@ class ArmenianKeyboardView: UIView {
     @objc private func keyReleased(_ sender: UIButton) {
         // If delete button, handle instantly for rapid taps
         if sender == deleteButton {
-            sender.alpha = 1.0  // No animation for instant response
+            sender.backgroundColor = restingBackgroundColor(for: sender)  // No animation for instant response
             isDeleteButtonHeld = false
             deleteTimer?.invalidate()
             deleteTimer = nil
@@ -356,7 +379,7 @@ class ArmenianKeyboardView: UIView {
 
         // For other keys, animate the release
         UIView.animate(withDuration: 0.05) {
-            sender.alpha = 1.0
+            sender.backgroundColor = self.restingBackgroundColor(for: sender)
         }
 
         // Hide the popup
