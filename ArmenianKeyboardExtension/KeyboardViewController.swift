@@ -144,40 +144,47 @@ class KeyboardViewController: UIInputViewController {
         // Don't interfere with caps lock
         guard !isCapsLocked else { return }
 
-        let context = textDocumentProxy.documentContextBeforeInput
+        // Respect fields that opt out, such as passwords, emails and URLs
+        guard textDocumentProxy.autocapitalizationType != UITextAutocapitalizationType.none else {
+            return
+        }
 
-        // Empty document or start of text — capitalize first letter
-        if context == nil || context!.isEmpty {
-            if !isShifted {
-                isShifted = true
-                keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
-            }
+        // A nil context means the surrounding text is unknown, not that the field
+        // is empty. It reads nil while the text input connection is still being
+        // established -- which is exactly when the keyboard is switched in -- so
+        // treating it as start-of-text is what turned shift on every time the
+        // Armenian keyboard appeared. Leave the shift state alone instead.
+        guard let context = textDocumentProxy.documentContextBeforeInput else { return }
+
+        // Start of text — capitalize first letter
+        if context.isEmpty {
+            enableShift()
             return
         }
 
         // After a newline
-        if context!.hasSuffix("\n") {
-            if !isShifted {
-                isShifted = true
-                keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
-            }
+        if context.hasSuffix("\n") {
+            enableShift()
             return
         }
 
         // After sentence-ending punctuation followed by space
-        if context!.hasSuffix(" ") {
-            let trimmed = context!.dropLast() // remove the trailing space
+        if context.hasSuffix(" ") {
+            let trimmed = context.dropLast() // remove the trailing space
             if let lastChar = trimmed.last {
                 let sentenceEnders: Set<Character> = [".", "!", "?", "։"]
                 if sentenceEnders.contains(lastChar) {
-                    if !isShifted {
-                        isShifted = true
-                        keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
-                    }
+                    enableShift()
                     return
                 }
             }
         }
+    }
+
+    private func enableShift() {
+        guard !isShifted else { return }
+        isShifted = true
+        keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
     }
 
     // MARK: - Suggestions
