@@ -9,30 +9,63 @@ import UIKit
 
 struct KeyboardColors {
 
+    /// Corner radius of a key cap, matched to the native iOS keyboard (8pt).
+    static let keyCornerRadius: CGFloat = 8
+
     /// Keyboard background color
+    ///
+    /// Dark value sampled from the native iOS 26 keyboard rendered over a black
+    /// host app: #161617.
     static var background: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "#2B2B2B")
+                ? UIColor(hex: "#161617")
                 : UIColor(hex: "#D1D4DB")
         }
     }
 
     /// Regular key background (letters, space)
+    ///
+    /// Dark value sampled from the native keyboard: #3C3C3D.
     static var keyBackground: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "#6b6b6b")
+                ? UIColor(hex: "#3C3C3D")
                 : UIColor.white
         }
     }
 
     /// Special key background (shift, delete, numbers, return)
+    ///
+    /// In dark mode the native keyboard draws special keys in the same shade as
+    /// letter keys, so this deliberately matches `keyBackground`. Light mode
+    /// still uses the darker gray Apple applies there.
     static var specialKeyBackground: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "#464646")
+                ? UIColor(hex: "#3C3C3D")
                 : UIColor(hex: "#ACB0B8")
+        }
+    }
+
+    /// Regular key background while held down
+    ///
+    /// Dark keys are lightened rather than faded; fading a #3C3C3D key toward the
+    /// #161617 background would make it vanish on press.
+    static var keyHighlight: UIColor {
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#5B5B5D")
+                : UIColor(hex: "#ACB0B8")
+        }
+    }
+
+    /// Special key background while held down
+    static var specialKeyHighlight: UIColor {
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(hex: "#5B5B5D")
+                : UIColor.white
         }
     }
 
@@ -40,7 +73,7 @@ struct KeyboardColors {
     static var shiftActiveBackground: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "#8b8b8b")
+                ? UIColor(hex: "#8B8B8D")
                 : UIColor.white
         }
     }
@@ -68,7 +101,7 @@ struct KeyboardColors {
     static var popupBackground: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
-                ? UIColor(hex: "#6b6b6b")
+                ? UIColor(hex: "#6B6B6D")
                 : UIColor.white
         }
     }
@@ -78,12 +111,4 @@ struct KeyboardColors {
         .label
     }
 
-    /// Key shadow color
-    static var keyShadow: UIColor {
-        UIColor { traits in
-            traits.userInterfaceStyle == .dark
-                ? UIColor.black
-                : UIColor.black.withAlphaComponent(0.3)
-        }
-    }
 }
