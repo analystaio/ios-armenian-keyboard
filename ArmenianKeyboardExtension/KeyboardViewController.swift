@@ -40,10 +40,6 @@ class KeyboardViewController: UIInputViewController {
     private var isCapsLocked = false
     private var isNumbersMode = false
 
-    // Auto-correction undo state
-    private var lastAutoInsertedWord: String?
-    private var lastOriginalWord: String?
-
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -181,10 +177,6 @@ class KeyboardViewController: UIInputViewController {
     }
 
     private func insertSuggestion(_ suggestion: String) {
-        // Clear any pending auto-correct undo
-        lastAutoInsertedWord = nil
-        lastOriginalWord = nil
-
         // Delete current word
         if let currentWord = getCurrentWord() {
             for _ in 0..<currentWord.count {
@@ -221,38 +213,10 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
                 keyboardView.updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
             }
 
-            // Clear auto-correct undo state (user continued typing)
-            lastAutoInsertedWord = nil
-            lastOriginalWord = nil
-
             updateSuggestions()
 
         case .delete:
-            // Check if we should undo an auto-correction (backspace right after auto-correct + space)
-            if let autoWord = lastAutoInsertedWord, let originalWord = lastOriginalWord {
-                let context = textDocumentProxy.documentContextBeforeInput ?? ""
-                if context.hasSuffix(" ") {
-                    // Undo: remove space, remove auto-corrected word, restore original
-                    textDocumentProxy.deleteBackward() // remove space
-                    for _ in 0..<autoWord.count {
-                        textDocumentProxy.deleteBackward()
-                    }
-                    textDocumentProxy.insertText(originalWord)
-
-                    lastAutoInsertedWord = nil
-                    lastOriginalWord = nil
-
-                    updateSuggestions()
-                    checkAutoCapitalization()
-                    return
-                }
-            }
-
-            // Normal delete
             textDocumentProxy.deleteBackward()
-            lastAutoInsertedWord = nil
-            lastOriginalWord = nil
-
             updateSuggestions()
             checkAutoCapitalization()
 
@@ -263,32 +227,10 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             advanceToNextInputMode()
 
         case .space:
-            // Auto-insert top suggestion if the user is typing and there's a better match
+            // Space commits exactly what the user typed. Suggestions are only
+            // applied when explicitly tapped in the suggestion bar.
             if let currentWord = getCurrentWord(), !currentWord.isEmpty {
-                let suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
-
-                if let topSuggestion = suggestions.first,
-                   topSuggestion.lowercased() != currentWord.lowercased(),
-                   currentWord.count >= 2 {
-                    // Replace typed word with top suggestion
-                    for _ in 0..<currentWord.count {
-                        textDocumentProxy.deleteBackward()
-                    }
-                    textDocumentProxy.insertText(topSuggestion)
-
-                    // Store undo state
-                    lastAutoInsertedWord = topSuggestion
-                    lastOriginalWord = currentWord
-
-                    contextTracker.addWord(topSuggestion)
-                } else {
-                    contextTracker.addWord(currentWord)
-                    lastAutoInsertedWord = nil
-                    lastOriginalWord = nil
-                }
-            } else {
-                lastAutoInsertedWord = nil
-                lastOriginalWord = nil
+                contextTracker.addWord(currentWord)
             }
 
             textDocumentProxy.insertText(" ")
@@ -298,8 +240,6 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
         case .return:
             textDocumentProxy.insertText("\n")
             contextTracker.clear()
-            lastAutoInsertedWord = nil
-            lastOriginalWord = nil
             suggestionBar.updateSuggestions([])
             checkAutoCapitalization()
 
