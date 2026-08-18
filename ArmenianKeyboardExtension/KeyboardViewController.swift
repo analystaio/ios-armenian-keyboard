@@ -85,7 +85,7 @@ class KeyboardViewController: UIInputViewController {
             suggestionBar.topAnchor.constraint(equalTo: view.topAnchor),
             suggestionBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             suggestionBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            suggestionBar.heightAnchor.constraint(equalToConstant: 44),
+            suggestionBar.heightAnchor.constraint(equalToConstant: 38),
 
             keyboardView.topAnchor.constraint(equalTo: suggestionBar.bottomAnchor),
             keyboardView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
