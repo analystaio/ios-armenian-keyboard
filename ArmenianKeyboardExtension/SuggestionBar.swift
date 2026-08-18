@@ -54,7 +54,7 @@ class SuggestionBar: UIView {
 
     private func createSuggestionButton(tag: Int) -> UIButton {
         var configuration = UIButton.Configuration.plain()
-        configuration.contentInsets = NSDirectionalEdgeInsets(top: 8, leading: 12, bottom: 8, trailing: 12)
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 12, bottom: 6, trailing: 12)
         configuration.baseForegroundColor = KeyboardColors.suggestionText
         configuration.background.backgroundColor = .clear
 
@@ -74,10 +74,11 @@ class SuggestionBar: UIView {
             divider.translatesAutoresizingMaskIntoConstraints = false
             button.addSubview(divider)
 
+            // 7pt insets on a 38pt bar give a 24pt divider, matching native iOS.
             NSLayoutConstraint.activate([
                 divider.trailingAnchor.constraint(equalTo: button.trailingAnchor),
-                divider.topAnchor.constraint(equalTo: button.topAnchor, constant: 8),
-                divider.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: -8),
+                divider.topAnchor.constraint(equalTo: button.topAnchor, constant: 7),
+                divider.bottomAnchor.constraint(equalTo: button.bottomAnchor, constant: -7),
                 divider.widthAnchor.constraint(equalToConstant: 0.5)
             ])
         }
