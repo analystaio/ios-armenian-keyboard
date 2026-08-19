@@ -115,6 +115,32 @@ class ArmenianKeyboardLayout {
         return keys
     }
 
+    /// Characters reachable by holding a key, as on the system Armenian keyboard.
+    ///
+    /// The ech-yiwn ligature և (U+0587) has no key of its own; it is held behind ե.
+    private let alternateKeys: [String: [String]] = [
+        "ե": ["և"]
+    ]
+
+    func alternates(for char: String) -> [String] {
+        return alternateKeys[char.lowercased()] ?? []
+    }
+
+    /// The form of an alternate to insert for the current shift state.
+    ///
+    /// և capitalizes to the two-letter "Եւ" in a sentence and to "ԵՒ" in all caps,
+    /// since Unicode has no single uppercase ligature for it.
+    func alternateOutput(_ alternate: String, isShifted: Bool, isCapsLocked: Bool) -> String {
+        if isCapsLocked {
+            return uppercased(alternate)
+        }
+        if isShifted {
+            let upper = uppercased(alternate)
+            return upper.prefix(1) + upper.dropFirst().lowercased()
+        }
+        return alternate
+    }
+
     // Uppercase mapping for Armenian letters
     func uppercased(_ char: String) -> String {
         let lowercaseToUppercase: [String: String] = [

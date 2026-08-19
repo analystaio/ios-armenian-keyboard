@@ -11,6 +11,8 @@ import AudioToolbox
 protocol ArmenianKeyboardViewDelegate: AnyObject {
     func didTapKey(_ key: KeyboardKey)
     func didMoveCursor(byOffset offset: Int)
+    /// Text picked from a key's hold-for-alternates popup, already cased.
+    func didTapAlternate(_ text: String)
 }
 
 class ArmenianKeyboardView: UIView {
@@ -35,6 +37,12 @@ class ArmenianKeyboardView: UIView {
 
     // Key popup
     private var keyPopupView: UIView?
+
+    // Hold-for-alternates popup
+    private var alternatesPopup: UIView?
+    private var alternateButtons: [UIButton] = []
+    private var alternateOptions: [String] = []
+    private var selectedAlternateIndex = 0
 
     // Space bar trackpad mode
     private var spaceButton: UIButton?
@@ -229,6 +237,15 @@ class ArmenianKeyboardView: UIView {
         button.addTarget(self, action: #selector(keyTapped(_:)), for: .touchUpInside)
         button.addTarget(self, action: #selector(keyPressed(_:)), for: .touchDown)
         button.addTarget(self, action: #selector(keyReleased(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+
+        // Keys with alternates get a hold gesture; the button's own tracking is
+        // cancelled once it recognizes, so keyTapped will not also fire.
+        if case .character(let char) = key.type, !layout.alternates(for: char).isEmpty {
+            let hold = UILongPressGestureRecognizer(target: self,
+                                                    action: #selector(handleAlternatesHold(_:)))
+            hold.minimumPressDuration = 0.5
+            button.addGestureRecognizer(hold)
+        }
 
         // For delete key, add long press support
         if case .delete = key.type {
@@ -518,6 +535,117 @@ class ArmenianKeyboardView: UIView {
         allKeys.append(contentsOf: layout.getBottomRow(numbersMode: isNumbersMode, showGlobeKey: showGlobeKey))
 
         return allKeys
+    }
+
+    // MARK: - Hold for Alternates
+    @objc private func handleAlternatesHold(_ gesture: UILongPressGestureRecognizer) {
+        guard let button = gesture.view as? UIButton else { return }
+        let keys = getAllKeys()
+        guard button.tag < keys.count, case .character(let char) = keys[button.tag].type else { return }
+
+        switch gesture.state {
+        case .began:
+            let options = layout.alternates(for: char).map {
+                layout.alternateOutput($0, isShifted: isShifted, isCapsLocked: isCapsLocked)
+            }
+            guard !options.isEmpty else { return }
+            hideKeyPopup()
+            showAlternatesPopup(options, over: button)
+
+        case .changed:
+            updateAlternateSelection(at: gesture.location(in: self))
+
+        case .ended:
+            let picked = alternateOptions.indices.contains(selectedAlternateIndex)
+                ? alternateOptions[selectedAlternateIndex]
+                : nil
+            hideAlternatesPopup()
+            button.backgroundColor = restingBackgroundColor(for: button)
+            if let picked = picked {
+                delegate?.didTapAlternate(picked)
+                if isShifted && !isCapsLocked {
+                    isShifted = false
+                    updateShiftState(isShifted: isShifted, isCapsLocked: isCapsLocked)
+                }
+            }
+
+        default:
+            hideAlternatesPopup()
+            button.backgroundColor = restingBackgroundColor(for: button)
+        }
+    }
+
+    private func showAlternatesPopup(_ options: [String], over button: UIButton) {
+        hideAlternatesPopup()
+
+        alternateOptions = options
+        selectedAlternateIndex = 0
+
+        let buttonFrame = button.convert(button.bounds, to: self)
+        let itemWidth: CGFloat = max(buttonFrame.width, 44)
+        let popupWidth = itemWidth * CGFloat(options.count) + 8
+        let popupHeight: CGFloat = 54
+
+        var popupX = buttonFrame.midX - popupWidth / 2
+        popupX = max(2, min(popupX, bounds.width - popupWidth - 2))
+
+        let popup = UIView(frame: CGRect(x: popupX,
+                                         y: buttonFrame.minY - popupHeight - 6,
+                                         width: popupWidth,
+                                         height: popupHeight))
+        popup.backgroundColor = KeyboardColors.popupBackground
+        popup.layer.cornerRadius = 10
+        popup.layer.shadowColor = UIColor.black.cgColor
+        popup.layer.shadowOpacity = 0.25
+        popup.layer.shadowOffset = CGSize(width: 0, height: 2)
+        popup.layer.shadowRadius = 4
+        addSubview(popup)
+
+        alternateButtons = []
+        for (index, option) in options.enumerated() {
+            let item = UIButton(type: .system)
+            item.frame = CGRect(x: 4 + CGFloat(index) * itemWidth,
+                                y: 4,
+                                width: itemWidth,
+                                height: popupHeight - 8)
+            item.setTitle(option, for: .normal)
+            item.setTitleColor(KeyboardColors.popupText, for: .normal)
+            item.titleLabel?.font = .systemFont(ofSize: 26, weight: .regular)
+            item.layer.cornerRadius = 6
+            item.isUserInteractionEnabled = false
+            popup.addSubview(item)
+            alternateButtons.append(item)
+        }
+
+        alternatesPopup = popup
+        highlightAlternate(at: 0)
+    }
+
+    /// Maps a finger position onto the popup so the user can slide between options.
+    private func updateAlternateSelection(at point: CGPoint) {
+        guard let popup = alternatesPopup, !alternateButtons.isEmpty else { return }
+        let local = CGPoint(x: point.x - popup.frame.minX, y: point.y - popup.frame.minY)
+        var index = 0
+        for (i, item) in alternateButtons.enumerated() where local.x >= item.frame.minX {
+            index = i
+        }
+        highlightAlternate(at: index)
+    }
+
+    private func highlightAlternate(at index: Int) {
+        selectedAlternateIndex = index
+        for (i, item) in alternateButtons.enumerated() {
+            item.backgroundColor = i == index ? UIColor.systemBlue : .clear
+            item.setTitleColor(i == index ? .white : KeyboardColors.popupText, for: .normal)
+        }
+    }
+
+    private func hideAlternatesPopup() {
+        alternatesPopup?.removeFromSuperview()
+        alternatesPopup = nil
+        alternateButtons = []
+        alternateOptions = []
+        selectedAlternateIndex = 0
     }
 
     // MARK: - Key Popup
