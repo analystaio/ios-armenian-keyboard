@@ -46,10 +46,12 @@ class NGramPredictor {
         }
     }
 
-    // Normalize Armenian ligature ев (U+0587) → ե+վ (U+0565+U+057E)
-    // Keyboards output the two letters separately; model is built the same way.
+    // Normalize the Armenian ech-yiwn ligature և (U+0587) → ե + ւ (U+0565 + U+0582).
+    // The keyboard outputs the two letters separately; the model is built the same way.
+    // The second letter is YIWN ւ, not VEW վ — decomposing to վ is what put
+    // բարեվ in the suggestion bar instead of բարեւ.
     private func normalize(_ s: String) -> String {
-        return s.replacingOccurrences(of: "\u{0587}", with: "\u{0565}\u{057E}")
+        return s.replacingOccurrences(of: "\u{0587}", with: "\u{0565}\u{0582}")
     }
 
     /// Predicts next words given recent context words, with backoff.
