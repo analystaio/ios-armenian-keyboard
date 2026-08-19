@@ -36,6 +36,10 @@ class KeyboardViewController: UIInputViewController {
     private let wordPredictor = ArmenianWordPredictor()
     private let ngramPredictor = NGramPredictor()
     private let contextTracker = ContextTracker()
+    /// Renders the real system keyboard backdrop rather than a colour approximating
+    /// it. The backdrop is translucent, so any fixed hex only matches the one host
+    /// background it was sampled over.
+    private let backdrop = UIInputView(frame: .zero, inputViewStyle: .keyboard)
     private let emojiStore = EmojiStore()
     private var emojiView: EmojiKeyboardView!
     private var isEmojiMode = false
@@ -68,6 +72,17 @@ class KeyboardViewController: UIInputViewController {
 
     // MARK: - Setup
     private func setupKeyboard() {
+        // Backdrop sits behind everything; all other views stay transparent so it
+        // shows through and the keyboard matches the system one by construction.
+        backdrop.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(backdrop)
+        NSLayoutConstraint.activate([
+            backdrop.topAnchor.constraint(equalTo: view.topAnchor),
+            backdrop.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            backdrop.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            backdrop.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
         // Setup suggestion bar
         suggestionBar = SuggestionBar()
         suggestionBar.translatesAutoresizingMaskIntoConstraints = false
@@ -136,7 +151,7 @@ class KeyboardViewController: UIInputViewController {
     }
 
     private func updateKeyboardAppearance() {
-        view.backgroundColor = KeyboardColors.background
+        view.backgroundColor = .clear
     }
 
     // MARK: - Auto-Capitalization
