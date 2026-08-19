@@ -111,7 +111,7 @@ final class EmojiKeyboardView: UIView {
     // MARK: Setup
 
     private func setup() {
-        backgroundColor = KeyboardColors.background
+        backgroundColor = .clear  // system backdrop shows through
 
         let layout = UICollectionViewFlowLayout()
         layout.minimumInteritemSpacing = 0

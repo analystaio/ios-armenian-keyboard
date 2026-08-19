@@ -28,7 +28,7 @@ class SuggestionBar: UIView {
 
     // MARK: - Setup
     private func setup() {
-        backgroundColor = KeyboardColors.background
+        backgroundColor = .clear  // system backdrop shows through
 
         // Setup stack view
         stackView.axis = .horizontal
