@@ -334,6 +334,18 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
         keyboardView.setNumbersMode(isNumbersMode)
     }
 
+    func didTapAlternate(_ text: String) {
+        textDocumentProxy.insertText(text)
+
+        // Clear context on sentence boundaries, as a normal character key does
+        if ContextTracker.isSentenceBoundary(text) {
+            contextTracker.clear()
+        }
+
+        updateSuggestions()
+        checkAutoCapitalization()
+    }
+
     func didMoveCursor(byOffset offset: Int) {
         textDocumentProxy.adjustTextPosition(byCharacterOffset: offset)
     }
