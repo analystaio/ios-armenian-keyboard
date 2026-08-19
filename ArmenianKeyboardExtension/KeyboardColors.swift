@@ -14,13 +14,13 @@ struct KeyboardColors {
 
     /// Keyboard background color
     ///
-    /// Dark value sampled from the native iOS 26 keyboard rendered over a black
-    /// host app: #161617.
+    /// Both values sampled from the native iOS 26 keyboard: #161617 over a black
+    /// host app, #E4E6EE over a white one.
     static var background: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
                 ? UIColor(hex: "#161617")
-                : UIColor(hex: "#D1D4DB")
+                : UIColor(hex: "#E4E6EE")
         }
     }
 
@@ -37,44 +37,50 @@ struct KeyboardColors {
 
     /// Special key background (shift, delete, numbers, return)
     ///
-    /// In dark mode the native keyboard draws special keys in the same shade as
-    /// letter keys, so this deliberately matches `keyBackground`. Light mode
-    /// still uses the darker gray Apple applies there.
+    /// The native iOS 26 keyboard draws special keys in the same shade as letter
+    /// keys in both appearances, so this deliberately matches `keyBackground`.
+    /// The two-tone treatment belongs to older iOS.
     static var specialKeyBackground: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
                 ? UIColor(hex: "#3C3C3D")
-                : UIColor(hex: "#ACB0B8")
+                : UIColor.white
         }
     }
 
     /// Regular key background while held down
     ///
-    /// Dark keys are lightened rather than faded; fading a #3C3C3D key toward the
+    /// Dark keys lighten and light keys darken; fading a #3C3C3D key toward the
     /// #161617 background would make it vanish on press.
     static var keyHighlight: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
                 ? UIColor(hex: "#5B5B5D")
-                : UIColor(hex: "#ACB0B8")
+                : UIColor(hex: "#D1D3DA")
         }
     }
 
     /// Special key background while held down
+    ///
+    /// Special keys now rest at the same shade as letter keys, so they press the
+    /// same way rather than inverting to white as they did when they were gray.
     static var specialKeyHighlight: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
                 ? UIColor(hex: "#5B5B5D")
-                : UIColor.white
+                : UIColor(hex: "#D1D3DA")
         }
     }
 
     /// Shift key when active
+    ///
+    /// Light mode cannot use white any more, since that is now the resting colour
+    /// of every key; it darkens instead, mirroring how dark mode lightens.
     static var shiftActiveBackground: UIColor {
         UIColor { traits in
             traits.userInterfaceStyle == .dark
                 ? UIColor(hex: "#8B8B8D")
-                : UIColor.white
+                : UIColor(hex: "#C7C9D0")
         }
     }
 
