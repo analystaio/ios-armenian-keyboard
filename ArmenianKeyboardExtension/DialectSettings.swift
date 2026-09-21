@@ -65,3 +65,40 @@ enum DialectSettings {
         FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)
     }
 }
+
+/// Whether the keyboard is actually set up, as far as the container app can tell.
+///
+/// Two independent signals: iOS lists the enabled keyboard bundle IDs in the
+/// app's own defaults, and the extension stamps the shared container every time
+/// it appears — which it can only do once Full Access is granted.
+enum KeyboardPresence {
+
+    static let extensionBundleID = "io.analysta.ArmenianKeyboard.Extension"
+
+    private static let lastSeenKey = "keyboardLastSeen"
+
+    /// Called by the extension. A no-op without Full Access, which is the point.
+    static func recordKeyboardOpened() {
+        sharedDefaultsIfAvailable?.set(Date().timeIntervalSince1970, forKey: lastSeenKey)
+    }
+
+    /// True once the extension has managed to write to the shared container,
+    /// i.e. the keyboard has run with Full Access granted.
+    static var hasRunWithFullAccess: Bool {
+        (sharedDefaultsIfAvailable?.double(forKey: lastSeenKey) ?? 0) > 0
+    }
+
+    /// True when the keyboard has been added in Settings → Keyboards.
+    static var isAdded: Bool {
+        guard let keyboards = UserDefaults.standard.object(forKey: "AppleKeyboards") as? [String] else {
+            return false
+        }
+        return keyboards.contains(extensionBundleID)
+    }
+
+    /// Unlike `DialectSettings.sharedDefaults` this does not fall back to the
+    /// process's own defaults — a heartbeat written there would mean nothing.
+    private static var sharedDefaultsIfAvailable: UserDefaults? {
+        UserDefaults(suiteName: DialectSettings.appGroupID)
+    }
+}

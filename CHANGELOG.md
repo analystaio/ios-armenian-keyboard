@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+### Changed
+- **Container app redesigned**
+  - Setup instructions replaced by a four-page onboarding flow, shown on first launch and reachable again from the home screen
+  - Home screen shows setup status: the keyboard counts as ready once it is added in Settings, with a Full Access hint until the extension first stamps the app group (which it can only do with Full Access granted)
+  - App calls itself by its Home Screen name, "Armenian Keyboard +"
+  - Dialect switcher is now a two-row card naming both dialects in English and Armenian, next to the learned-words control
+  - Features list removed; acknowledgements moved into an About sheet behind the ⓘ button
+  - `UIRequiredDeviceCapabilities` corrected from `armv7` to `arm64`
+
 ### Added
 - **Western Armenian dialect** (setting in the app, shared with the keyboard via an app group)
   - Same key layout; switches the completion dictionary and next-word model

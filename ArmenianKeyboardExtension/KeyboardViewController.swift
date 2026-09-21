@@ -77,6 +77,7 @@ class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        KeyboardPresence.recordKeyboardOpened()
         reloadPredictorsIfDialectChanged()
         updateKeyboardAppearance()
         checkAutoCapitalization()

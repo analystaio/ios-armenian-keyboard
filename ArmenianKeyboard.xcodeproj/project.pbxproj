@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		AA0000010000000000000001 /* ArmenianKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000020000000000000001 /* ArmenianKeyboardApp.swift */; };
 		AA0000030000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000040000000000000001 /* ContentView.swift */; };
+		AC0000010000000000000001 /* AppChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0000020000000000000001 /* AppChrome.swift */; };
+		OB0000010000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OB0000020000000000000001 /* OnboardingView.swift */; };
+		AB0000010000000000000001 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000020000000000000001 /* AboutView.swift */; };
 		AA0000110000000000000001 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000120000000000000001 /* KeyboardViewController.swift */; };
 		AA0000130000000000000001 /* ArmenianKeyboardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000140000000000000001 /* ArmenianKeyboardLayout.swift */; };
 		AA0000150000000000000001 /* ArmenianKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000160000000000000001 /* ArmenianKeyboardView.swift */; };
@@ -64,6 +67,9 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 /* Begin PBXFileReference section */
 		AA0000020000000000000001 /* ArmenianKeyboardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArmenianKeyboardApp.swift; sourceTree = "<group>"; };
 		AA0000040000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		AC0000020000000000000001 /* AppChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppChrome.swift; sourceTree = "<group>"; };
+		OB0000020000000000000001 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		AB0000020000000000000001 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		AA0000050000000000000001 /* ArmenianKeyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArmenianKeyboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AA0000060000000000000001 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AA0000120000000000000001 /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
@@ -127,6 +133,9 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 			children = (
 				AA0000020000000000000001 /* ArmenianKeyboardApp.swift */,
 				AA0000040000000000000001 /* ContentView.swift */,
+				AC0000020000000000000001 /* AppChrome.swift */,
+				OB0000020000000000000001 /* OnboardingView.swift */,
+				AB0000020000000000000001 /* AboutView.swift */,
 				AA0000ASSETS0000000000001 /* Assets.xcassets */,
 				AA0000060000000000000001 /* Info.plist */,
 				PV0000020000000000000001 /* PrivacyInfo.xcprivacy */,
@@ -281,6 +290,9 @@ NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 			files = (
 				AA0000010000000000000001 /* ArmenianKeyboardApp.swift in Sources */,
 				AA0000030000000000000001 /* ContentView.swift in Sources */,
+				AC0000010000000000000001 /* AppChrome.swift in Sources */,
+				OB0000010000000000000001 /* OnboardingView.swift in Sources */,
+				AB0000010000000000000001 /* AboutView.swift in Sources */,
 				DS0000030000000000000001 /* DialectSettings.swift in Sources */,
 				UL0000030000000000000001 /* UserLearningStore.swift in Sources */,
 			);
