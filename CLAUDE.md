@@ -19,8 +19,8 @@ The user has an Arch Linux machine with an NVIDIA RTX 3060 (12GB VRAM) for train
 
 ### ML Training Environment
 
-- **Working directory**: `~/ml_training/`
-- **Virtual environment**: `~/ml_training/.venv/`
+- **Working directory**: `~/armenian-nlp/`
+- **Virtual environment**: `~/armenian-nlp/.venv/`
 - **PyTorch version**: 2.5.1+cu121 (CUDA enabled)
 - **venv note**: Must use Python 3.13 explicitly (system Python 3.14 breaks torch):
   ```bash
@@ -125,7 +125,7 @@ Goal: a Western Armenian (classical orthography) variant of both predictors. Tog
 container app's settings or as a second keyboard — never as an on-keyboard control. User learning
 (on-device frequency bumps for typed/accepted words) is planned for both dialects.
 
-### Data (all on <training-host> under `~/ml_training/data/western/`)
+### Data (all on <training-host> under `~/Desktop/armenian-nlp/data/western/`)
 
 | Source | Use | License |
 |---|---|---|
@@ -134,10 +134,10 @@ container app's settings or as a second keyboard — never as an on-keyboard con
 | Western Armenian Wikipedia dump (hywwiki) | 3.7M cleaned words; n-gram corpus | CC BY-SA 4.0 |
 | hyw-en parallel corpus (AriNubar) | cleaned to `corpus/parallel_nc_clean.txt` but NOT in the default build | CC BY-NC-SA 4.0 — non-commercial, keep out of shipped models |
 
-### Build scripts (`~/ml_training/`)
+### Build scripts (`~/Desktop/armenian-nlp/`)
 
 ```bash
-cd ~/ml_training && D=data/western
+cd ~/Desktop/armenian-nlp && D=data/western
 # 1. completion dictionary: western_words.tsv (120K forms, "form<TAB>score 1..255", code-point sorted)
 #    + western_bigrams.tsv (Nayiri periphrastic pairs)
 python3 build_western_lexicon.py --nayiri $D/nayiri-armenian-lexicon-2026-04-25-v3.json \
