@@ -1,6 +1,8 @@
-# Armenian Keyboard for iOS
+# Armenian Keyboard+
 
 A custom iOS keyboard extension for typing Armenian (հայերեն) with a standard Armenian layout and a word suggestion bar. It supports Eastern and Western Armenian and is published on the App Store by Analysta.
+
+**[Download on the App Store](https://apps.apple.com/us/app/armenian-keyboard/id6753932933)**
 
 ## Features
 
