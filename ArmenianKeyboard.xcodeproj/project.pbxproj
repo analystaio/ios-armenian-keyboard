@@ -10,7 +10,6 @@
 		AA0000010000000000000001 /* ArmenianKeyboardApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000020000000000000001 /* ArmenianKeyboardApp.swift */; };
 		AA0000030000000000000001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000040000000000000001 /* ContentView.swift */; };
 		AC0000010000000000000001 /* AppChrome.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0000020000000000000001 /* AppChrome.swift */; };
-		LW0000010000000000000001 /* LearnedWordsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = LW0000020000000000000001 /* LearnedWordsView.swift */; };
 		OB0000010000000000000001 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = OB0000020000000000000001 /* OnboardingView.swift */; };
 		AB0000010000000000000001 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000020000000000000001 /* AboutView.swift */; };
 		AA0000110000000000000001 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000120000000000000001 /* KeyboardViewController.swift */; };
@@ -39,6 +38,27 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 		SW0000010000000000000001 /* SortedWordList.swift in Sources */ = {isa = PBXBuildFile; fileRef = SW0000020000000000000001 /* SortedWordList.swift */; };
 		WW0000010000000000000001 /* western_words.tsv in Resources */ = {isa = PBXBuildFile; fileRef = WW0000020000000000000001 /* western_words.tsv */; };
 		WN0000010000000000000001 /* western_ngram.json in Resources */ = {isa = PBXBuildFile; fileRef = WN0000020000000000000001 /* western_ngram.json */; };
+		WXS00000000000000000001 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000120000000000000001 /* KeyboardViewController.swift */; };
+		WXS00100000000000000001 /* ArmenianKeyboardLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000140000000000000001 /* ArmenianKeyboardLayout.swift */; };
+		WXS00200000000000000001 /* ArmenianKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000160000000000000001 /* ArmenianKeyboardView.swift */; };
+		WXS00300000000000000001 /* SuggestionBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000180000000000000001 /* SuggestionBar.swift */; };
+		WXS00400000000000000001 /* Trie.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000200000000000000001 /* Trie.swift */; };
+		WXS00500000000000000001 /* ArmenianWordPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000220000000000000001 /* ArmenianWordPredictor.swift */; };
+		WXS00600000000000000001 /* ArmenianDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000240000000000000001 /* ArmenianDictionary.swift */; };
+		WXS00700000000000000001 /* BigramDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFBD4FFF0E81F34015BA4EBC /* BigramDictionary.swift */; };
+		WXS00800000000000000001 /* NGramPredictor.swift in Sources */ = {isa = PBXBuildFile; fileRef = NF65CFFB4A27004BC982F720 /* NGramPredictor.swift */; };
+		WXS00900000000000000001 /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF6963DE9C816940449A5A56 /* ContextTracker.swift */; };
+		WXS01000000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = KC0000020000000000000001 /* KeyboardColors.swift */; };
+		WXS01100000000000000001 /* EmojiData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EM0000020000000000000001 /* EmojiData.swift */; };
+		WXS01200000000000000001 /* EmojiKeyboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EM0000040000000000000001 /* EmojiKeyboardView.swift */; };
+		WXS01300000000000000001 /* DialectSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DS0000020000000000000001 /* DialectSettings.swift */; };
+		WXS01400000000000000001 /* UserLearningStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = UL0000020000000000000001 /* UserLearningStore.swift */; };
+		WXS01500000000000000001 /* SortedWordList.swift in Sources */ = {isa = PBXBuildFile; fileRef = SW0000020000000000000001 /* SortedWordList.swift */; };
+		WXR00000000000000000001 /* western_ngram.json in Resources */ = {isa = PBXBuildFile; fileRef = WN0000020000000000000001 /* western_ngram.json */; };
+		WXR00100000000000000001 /* western_words.tsv in Resources */ = {isa = PBXBuildFile; fileRef = WW0000020000000000000001 /* western_words.tsv */; };
+		WXR00200000000000000001 /* emoji.json in Resources */ = {isa = PBXBuildFile; fileRef = EM0000060000000000000001 /* emoji.json */; };
+		WXR00300000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PV0000040000000000000001 /* PrivacyInfo.xcprivacy */; };
+		WX00120000000000000001 /* ArmenianKeyboardWesternExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = WX00020000000000000001 /* ArmenianKeyboardWesternExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,6 +68,13 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 			proxyType = 1;
 			remoteGlobalIDString = AA0000290000000000000001;
 			remoteInfo = ArmenianKeyboardExtension;
+		};
+		WX00090000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AA0000280000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = WX00010000000000000001;
+			remoteInfo = ArmenianKeyboardWesternExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -59,6 +86,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 			dstSubfolderSpec = 13;
 			files = (
 				AA0000250000000000000001 /* ArmenianKeyboardExtension.appex in Embed Foundation Extensions */,
+				WX00120000000000000001 /* ArmenianKeyboardWesternExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -69,7 +97,6 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 		AA0000020000000000000001 /* ArmenianKeyboardApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArmenianKeyboardApp.swift; sourceTree = "<group>"; };
 		AA0000040000000000000001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		AC0000020000000000000001 /* AppChrome.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppChrome.swift; sourceTree = "<group>"; };
-		LW0000020000000000000001 /* LearnedWordsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LearnedWordsView.swift; sourceTree = "<group>"; };
 		OB0000020000000000000001 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		AB0000020000000000000001 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		AA0000050000000000000001 /* ArmenianKeyboard.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArmenianKeyboard.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,8 +126,8 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 		SW0000020000000000000001 /* SortedWordList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortedWordList.swift; sourceTree = "<group>"; };
 		WW0000020000000000000001 /* western_words.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; path = western_words.tsv; sourceTree = "<group>"; };
 		WN0000020000000000000001 /* western_ngram.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = western_ngram.json; sourceTree = "<group>"; };
-		EN0000020000000000000001 /* ArmenianKeyboard.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ArmenianKeyboard.entitlements; sourceTree = "<group>"; };
-		EN0000040000000000000001 /* ArmenianKeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ArmenianKeyboardExtension.entitlements; sourceTree = "<group>"; };
+		WX00020000000000000001 /* ArmenianKeyboardWesternExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = ArmenianKeyboardWesternExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		WX00110000000000000001 /* Info-Western.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Western.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +139,13 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		AA0000330000000000000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		WX00040000000000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -136,13 +170,11 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 				AA0000020000000000000001 /* ArmenianKeyboardApp.swift */,
 				AA0000040000000000000001 /* ContentView.swift */,
 				AC0000020000000000000001 /* AppChrome.swift */,
-				LW0000020000000000000001 /* LearnedWordsView.swift */,
 				OB0000020000000000000001 /* OnboardingView.swift */,
 				AB0000020000000000000001 /* AboutView.swift */,
 				AA0000ASSETS0000000000001 /* Assets.xcassets */,
 				AA0000060000000000000001 /* Info.plist */,
 				PV0000020000000000000001 /* PrivacyInfo.xcprivacy */,
-				EN0000020000000000000001 /* ArmenianKeyboard.entitlements */,
 			);
 			path = ArmenianKeyboard;
 			sourceTree = "<group>";
@@ -171,8 +203,8 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 				WW0000020000000000000001 /* western_words.tsv */,
 				EM0000060000000000000001 /* emoji.json */,
 				AA0000310000000000000001 /* Info.plist */,
+				WX00110000000000000001 /* Info-Western.plist */,
 				PV0000040000000000000001 /* PrivacyInfo.xcprivacy */,
-				EN0000040000000000000001 /* ArmenianKeyboardExtension.entitlements */,
 			);
 			path = ArmenianKeyboardExtension;
 			sourceTree = "<group>";
@@ -182,6 +214,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			children = (
 				AA0000050000000000000001 /* ArmenianKeyboard.app */,
 				AA0000260000000000000001 /* ArmenianKeyboardExtension.appex */,
+				WX00020000000000000001 /* ArmenianKeyboardWesternExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -219,11 +252,29 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			);
 			dependencies = (
 				AA0000420000000000000001 /* PBXTargetDependency */,
+				WX00100000000000000001 /* PBXTargetDependency */,
 			);
 			name = ArmenianKeyboard;
 			productName = ArmenianKeyboard;
 			productReference = AA0000050000000000000001 /* ArmenianKeyboard.app */;
 			productType = "com.apple.product-type.application";
+		};
+		WX00010000000000000001 /* ArmenianKeyboardWesternExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = WX00060000000000000001 /* Build configuration list for PBXNativeTarget "ArmenianKeyboardWesternExtension" */;
+			buildPhases = (
+				WX00030000000000000001 /* Sources */,
+				WX00040000000000000001 /* Frameworks */,
+				WX00050000000000000001 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ArmenianKeyboardWesternExtension;
+			productName = ArmenianKeyboardWesternExtension;
+			productReference = WX00020000000000000001 /* ArmenianKeyboardWesternExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -258,6 +309,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			targets = (
 				AA0000380000000000000001 /* ArmenianKeyboard */,
 				AA0000290000000000000001 /* ArmenianKeyboardExtension */,
+				WX00010000000000000001 /* ArmenianKeyboardWesternExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -278,9 +330,18 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			files = (
 NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 				EM0000050000000000000001 /* emoji.json in Resources */,
-				WN0000010000000000000001 /* western_ngram.json in Resources */,
-				WW0000010000000000000001 /* western_words.tsv in Resources */,
 				PV0000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		WX00050000000000000001 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				WXR00000000000000000001 /* western_ngram.json in Resources */,
+				WXR00100000000000000001 /* western_words.tsv in Resources */,
+				WXR00200000000000000001 /* emoji.json in Resources */,
+				WXR00300000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -294,7 +355,6 @@ NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 				AA0000010000000000000001 /* ArmenianKeyboardApp.swift in Sources */,
 				AA0000030000000000000001 /* ContentView.swift in Sources */,
 				AC0000010000000000000001 /* AppChrome.swift in Sources */,
-				LW0000010000000000000001 /* LearnedWordsView.swift in Sources */,
 				OB0000010000000000000001 /* OnboardingView.swift in Sources */,
 				AB0000010000000000000001 /* AboutView.swift in Sources */,
 				DS0000030000000000000001 /* DialectSettings.swift in Sources */,
@@ -325,6 +385,29 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		WX00030000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				WXS00000000000000000001 /* KeyboardViewController.swift in Sources */,
+				WXS00100000000000000001 /* ArmenianKeyboardLayout.swift in Sources */,
+				WXS00200000000000000001 /* ArmenianKeyboardView.swift in Sources */,
+				WXS00300000000000000001 /* SuggestionBar.swift in Sources */,
+				WXS00400000000000000001 /* Trie.swift in Sources */,
+				WXS00500000000000000001 /* ArmenianWordPredictor.swift in Sources */,
+				WXS00600000000000000001 /* ArmenianDictionary.swift in Sources */,
+				WXS00700000000000000001 /* BigramDictionary.swift in Sources */,
+				WXS00800000000000000001 /* NGramPredictor.swift in Sources */,
+				WXS00900000000000000001 /* ContextTracker.swift in Sources */,
+				WXS01000000000000000001 /* KeyboardColors.swift in Sources */,
+				WXS01100000000000000001 /* EmojiData.swift in Sources */,
+				WXS01200000000000000001 /* EmojiKeyboardView.swift in Sources */,
+				WXS01300000000000000001 /* DialectSettings.swift in Sources */,
+				WXS01400000000000000001 /* UserLearningStore.swift in Sources */,
+				WXS01500000000000000001 /* SortedWordList.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -332,6 +415,11 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 			isa = PBXTargetDependency;
 			target = AA0000290000000000000001 /* ArmenianKeyboardExtension */;
 			targetProxy = AA0000270000000000000001 /* PBXContainerItemProxy */;
+		};
+		WX00100000000000000001 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = WX00010000000000000001 /* ArmenianKeyboardWesternExtension */;
+			targetProxy = WX00090000000000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -466,7 +554,6 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboard/ArmenianKeyboard.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboard/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -498,7 +585,6 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboard/ArmenianKeyboard.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboard/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -526,7 +612,6 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
-				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboardExtension/ArmenianKeyboardExtension.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -551,7 +636,6 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
-				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboardExtension/ArmenianKeyboardExtension.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -561,6 +645,54 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				);
 				MARKETING_VERSION = 1.3.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.Extension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		WX00070000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
+				DEVELOPMENT_TEAM = ZSF527R2M3;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "ArmenianKeyboardExtension/Info-Western.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.WesternExtension;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		WX00080000000000000001 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 8;
+				DEVELOPMENT_TEAM = ZSF527R2M3;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "ArmenianKeyboardExtension/Info-Western.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.3.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.WesternExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -595,6 +727,15 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 			buildConfigurations = (
 				AA0000470000000000000001 /* Debug */,
 				AA0000480000000000000001 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		WX00060000000000000001 /* Build configuration list for PBXNativeTarget "ArmenianKeyboardWesternExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				WX00070000000000000001 /* Debug */,
+				WX00080000000000000001 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

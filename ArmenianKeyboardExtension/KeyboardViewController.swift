@@ -33,9 +33,6 @@ class KeyboardViewController: UIInputViewController {
     private var keyboardView: ArmenianKeyboardView!
     private var suggestionBar: SuggestionBar!
     private let armenianLayout = ArmenianKeyboardLayout()
-    /// Set in the container app; the layout is identical for both dialects,
-    /// only the predictors and learned words differ.
-    private var dialect = DialectSettings.dialect
     private var learning: UserLearningStore
     private var wordPredictor: ArmenianWordPredictor
     private var ngramPredictor: NGramPredictor
@@ -77,8 +74,6 @@ class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        KeyboardPresence.recordKeyboardOpened()
-        reloadPredictorsIfDialectChanged()
         updateKeyboardAppearance()
         checkAutoCapitalization()
         updateSuggestions()
@@ -87,19 +82,6 @@ class KeyboardViewController: UIInputViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         learning.flush()
-    }
-
-    // MARK: - Dialect
-    private func reloadPredictorsIfDialectChanged() {
-        let current = DialectSettings.dialect
-        guard current != dialect else { return }
-        learning.flush()
-        dialect = current
-        learning = UserLearningStore(dialect: current)
-        wordPredictor = ArmenianWordPredictor(dialect: current, learning: learning)
-        ngramPredictor = NGramPredictor(dialect: current, learning: learning)
-        wirePredictorCallbacks()
-        contextTracker.clear()
     }
 
     private func wirePredictorCallbacks() {

@@ -112,6 +112,9 @@ struct OnboardingPage {
     let primaryButton: String
     let opensSettings: Bool
     var showsSuggestionPreview: Bool = false
+    /// Numbered when the rows are instructions to follow in order, plain when
+    /// they are a list of things to choose between.
+    var numbersSteps: Bool { !title.contains("Eastern or Western") }
 
     static let all: [OnboardingPage] = [
         OnboardingPage(
@@ -124,24 +127,24 @@ struct OnboardingPage {
             showsSuggestionPreview: true
         ),
         OnboardingPage(
+            symbol: "character.book.closed",
+            title: "Eastern or Western",
+            body: "Two keyboards, one for each dialect. The keys are identical — what differs is the words each one suggests. Add either, or both and switch between them.",
+            steps: [
+                "Armenian (Eastern) · Արևելահայերեն",
+                "Armenian (Western) · Արեւմտահայերէն"
+            ],
+            primaryButton: "Continue",
+            opensSettings: false
+        ),
+        OnboardingPage(
             symbol: "plus.square.on.square",
-            title: "Add the keyboard",
+            title: "Add a keyboard",
             body: "iOS keeps third-party keyboards in Settings. It takes about thirty seconds.",
             steps: [
                 "Open Settings → General → Keyboard",
                 "Tap Keyboards, then Add New Keyboard…",
-                "Choose Armenian under Third-Party Keyboards"
-            ],
-            primaryButton: "Open Settings",
-            opensSettings: true
-        ),
-        OnboardingPage(
-            symbol: "lock.open",
-            title: "Allow Full Access",
-            body: "Word suggestions and the dialect setting need Full Access. Nothing you type leaves your iPhone — the keyboard has no network code at all.",
-            steps: [
-                "In Keyboards, tap Armenian",
-                "Turn on Allow Full Access"
+                "Pick Armenian (Eastern) or Armenian (Western)"
             ],
             primaryButton: "Open Settings",
             opensSettings: true
@@ -149,7 +152,7 @@ struct OnboardingPage {
         OnboardingPage(
             symbol: "globe",
             title: "Start typing",
-            body: "In any app, press and hold the globe key on the keyboard and pick Armenian. Tap a suggestion to accept it — the keyboard learns the words you use most.",
+            body: "In any app, press and hold the globe key and pick your Armenian keyboard. Tap a suggestion to accept it — each keyboard learns the words you use most, and keeps them on this iPhone.",
             steps: [],
             primaryButton: "Done",
             opensSettings: false
@@ -210,9 +213,9 @@ private struct OnboardingPageView: View {
                     VStack(spacing: 0) {
                         ForEach(Array(page.steps.enumerated()), id: \.offset) { index, step in
                             if index > 0 {
-                                RowDivider(leadingInset: 56)
+                                RowDivider(leadingInset: page.numbersSteps ? 56 : 16)
                             }
-                            StepRow(number: index + 1, text: step)
+                            StepRow(number: page.numbersSteps ? index + 1 : nil, text: step)
                         }
                     }
                     .background(AppTheme.cardBackground)
@@ -259,16 +262,18 @@ private struct SuggestionBarPreview: View {
 }
 
 private struct StepRow: View {
-    let number: Int
+    let number: Int?
     let text: String
 
     var body: some View {
         HStack(alignment: .center, spacing: 14) {
-            Text("\(number)")
-                .font(.footnote.weight(.bold))
-                .foregroundColor(.white)
-                .frame(width: 24, height: 24)
-                .background(Circle().fill(AppTheme.accent))
+            if let number = number {
+                Text("\(number)")
+                    .font(.footnote.weight(.bold))
+                    .foregroundColor(.white)
+                    .frame(width: 24, height: 24)
+                    .background(Circle().fill(AppTheme.accent))
+            }
 
             Text(text)
                 .font(.subheadline)

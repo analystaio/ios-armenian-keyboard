@@ -44,16 +44,22 @@ final class UserLearningStore {
 
     // MARK: - Location
 
+    /// Learned data lives in the bundle's own container. Each keyboard
+    /// extension keeps its own, which is all a keyboard can reach without Full
+    /// Access — and all it needs, since each one only predicts its dialect.
     static func fileURL(for dialect: ArmenianDialect) -> URL {
-        let base = DialectSettings.sharedContainerURL
-            ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+        directory().appendingPathComponent("\(dialect.rawValue).json")
+    }
+
+    private static func directory() -> URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
             ?? FileManager.default.temporaryDirectory
         let dir = base.appendingPathComponent("Learning", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        return dir.appendingPathComponent("\(dialect.rawValue).json")
+        return dir
     }
 
-    /// Deletes learned data for every dialect. Used by the container app.
+    /// Deletes learned data for every dialect in this bundle's container.
     static func resetAll() {
         for d in ArmenianDialect.allCases {
             try? FileManager.default.removeItem(at: fileURL(for: d))
