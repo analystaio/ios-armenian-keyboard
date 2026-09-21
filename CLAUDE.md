@@ -7,26 +7,11 @@ The task is to develop an iOS app that adds a Armenian keyboard with a word sugg
 - When unsure about something do websearch
 - Ask questions to clarify unknowns. Strive not to make assumptions
 
-## Arch Linux Training Machine
+## ML training and data
 
-The user has an Arch Linux machine with an NVIDIA RTX 3060 (12GB VRAM) for training ML models.
-
-### Connection Details
-
-- **Hostname**: `<training-host>` (or `<training-host-ip>`)
-- **Username**: `varant`
-- **SSH**: `ssh <user>@<training-host>`
-
-### ML Training Environment
-
-- **Working directory**: `~/armenian-nlp/`
-- **Virtual environment**: `~/armenian-nlp/.venv/`
-- **PyTorch version**: 2.5.1+cu121 (CUDA enabled)
-- **venv note**: Must use Python 3.13 explicitly (system Python 3.14 breaks torch):
-  ```bash
-  ~/.pyenv/versions/3.13.11/bin/python3 -m venv .venv
-  .venv/bin/pip install -r requirements.txt
-  ```
+Model training, corpus building and the Western Armenian lexicon pipeline live in a separate
+private `armenian-nlp` repo, not here. This repo only ships the built artifacts
+(`armenian_ngram.json`, `western_ngram.json`, `western_words.tsv`).
 
 ## Word Prediction
 
@@ -125,7 +110,7 @@ Goal: a Western Armenian (classical orthography) variant of both predictors. Tog
 container app's settings or as a second keyboard — never as an on-keyboard control. User learning
 (on-device frequency bumps for typed/accepted words) is planned for both dialects.
 
-### Data (all on <training-host> under `~/Desktop/armenian-nlp/data/western/`)
+### Data (kept in the `armenian-nlp` repo under `data/western/`)
 
 | Source | Use | License |
 |---|---|---|
@@ -134,10 +119,10 @@ container app's settings or as a second keyboard — never as an on-keyboard con
 | Western Armenian Wikipedia dump (hywwiki) | 3.7M cleaned words; n-gram corpus | CC BY-SA 4.0 |
 | hyw-en parallel corpus (AriNubar) | cleaned to `corpus/parallel_nc_clean.txt` but NOT in the default build | CC BY-NC-SA 4.0 — non-commercial, keep out of shipped models |
 
-### Build scripts (`~/Desktop/armenian-nlp/`)
+### Build scripts (in the `armenian-nlp` repo)
 
 ```bash
-cd ~/Desktop/armenian-nlp && D=data/western
+D=data/western   # run from the armenian-nlp checkout
 # 1. completion dictionary: western_words.tsv (120K forms, "form<TAB>score 1..255", code-point sorted)
 #    + western_bigrams.tsv (Nayiri periphrastic pairs)
 python3 build_western_lexicon.py --nayiri $D/nayiri-armenian-lexicon-2026-04-25-v3.json \
