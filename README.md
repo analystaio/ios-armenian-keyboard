@@ -9,8 +9,8 @@ A custom iOS keyboard extension for typing Armenian (հայերեն) with a stan
 - System-wide keyboard that works in all iOS apps
 - Standard Eastern Armenian phonetic layout with a numbers and punctuation layer
 - Word completion while typing and next-word prediction after a space
-- Eastern and Western Armenian dialects, selected in the container app
-- On-device learning of the words you type and accept
+- Eastern and Western Armenian as two keyboards, Armenian (Eastern) and Armenian (Western), with identical keys and dialect-specific suggestions
+- On-device learning of the words you type and accept, kept per keyboard
 - Emoji keyboard
 - Native iOS appearance with light and dark mode support
 - All processing happens on the device; no network access
@@ -36,9 +36,10 @@ A custom iOS keyboard extension for typing Armenian (հայերեն) with a stan
    - Select both targets (ArmenianKeyboard and ArmenianKeyboardExtension)
    - Under "Signing & Capabilities", select your team
 
-3. Update the bundle identifiers and app group if you are building your own copy:
+3. Update the bundle identifiers if you are building your own copy:
    - Main app: `io.analysta.ArmenianKeyboard`
-   - Extension: `io.analysta.ArmenianKeyboard.Extension`
+   - Eastern keyboard: `io.analysta.ArmenianKeyboard.Extension`
+   - Western keyboard: `io.analysta.ArmenianKeyboard.WesternExtension`
 
 4. Build and run on a physical device. Keyboard extensions cannot be fully tested in the simulator.
 
@@ -46,8 +47,8 @@ A custom iOS keyboard extension for typing Armenian (հայերեն) with a stan
 
 1. After installing the app, go to Settings > General > Keyboard > Keyboards
 2. Tap Add New Keyboard...
-3. Select Armenian under Third-Party Keyboards
-4. To use the keyboard, tap and hold the globe key and select Armenian
+3. Select Armenian (Eastern) or Armenian (Western) under Third-Party Keyboards. Add both to switch between dialects.
+4. To use a keyboard, tap and hold the globe key and select it
 
 The keyboard does not request Full Access. Suggestions and learning work without it.
 
@@ -57,12 +58,13 @@ The keyboard does not request Full Access. Suggestions and learning work without
 ArmenianKeyboard/
 ├── ArmenianKeyboard/              # Container app (SwiftUI)
 │   ├── ArmenianKeyboardApp.swift  # App entry point
-│   ├── ContentView.swift          # Status and settings
+│   ├── ContentView.swift          # Setup status
 │   ├── OnboardingView.swift       # Setup instructions
 │   ├── AboutView.swift            # About and credits
+│   ├── AppChrome.swift            # Shared app styling
 │   └── Info.plist                 # App configuration
 │
-├── ArmenianKeyboardExtension/     # Keyboard extension (UIKit)
+├── ArmenianKeyboardExtension/     # Keyboard extensions (UIKit); one source tree, two targets
 │   ├── KeyboardViewController.swift   # Main keyboard controller
 │   ├── ArmenianKeyboardLayout.swift   # Key layout definitions
 │   ├── ArmenianKeyboardView.swift     # Keyboard UI
@@ -72,14 +74,15 @@ ArmenianKeyboard/
 │   ├── NGramPredictor.swift           # Next-word n-gram model
 │   ├── ContextTracker.swift           # Tracks recent words for context
 │   ├── UserLearningStore.swift        # On-device learned words
-│   ├── DialectSettings.swift          # Eastern/Western selection
+│   ├── DialectSettings.swift          # Which dialect this bundle was built for
 │   ├── Trie.swift                     # Prefix lookup (Eastern)
 │   ├── SortedWordList.swift           # Prefix lookup (Western)
 │   ├── ArmenianDictionary.swift       # Eastern word list
 │   ├── armenian_ngram.json            # Eastern n-gram model
 │   ├── western_words.tsv              # Western word list
 │   ├── western_ngram.json             # Western n-gram model
-│   └── Info.plist                     # Extension configuration
+│   ├── Info.plist                     # Armenian (Eastern) configuration
+│   └── Info-Western.plist             # Armenian (Western) configuration
 │
 └── docs/                          # Project website and privacy policy
 ```
@@ -112,7 +115,7 @@ The suggestion bar shows up to three predictions and uses two modes:
 - **Prefix completion** while typing a word. Eastern Armenian uses a trie built from a dictionary of about 1,500 common words. Western Armenian uses a sorted word list of about 120,000 inflected forms.
 - **Next-word prediction** after a space. A 4-gram model with backoff to 3-gram, 2-gram, and unigram counts, trained on native Armenian text.
 
-Words you type and accept are learned on the device and ranked higher in future suggestions.
+Words you type and accept are learned on the device, separately for each keyboard, and ranked higher in future suggestions.
 
 ## Privacy
 
