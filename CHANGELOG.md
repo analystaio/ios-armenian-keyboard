@@ -9,6 +9,7 @@
   - App calls itself by its Home Screen name, "Armenian Keyboard +"
   - Dialect switcher is now a two-row card naming both dialects in English and Armenian, next to the learned-words control
   - Features list removed; acknowledgements moved into an About sheet behind the ⓘ button
+  - "Open Keyboard Settings" button removed; the Full Access hint carries its own Settings link, which is the one case the shortcut helps
   - `UIRequiredDeviceCapabilities` corrected from `armv7` to `arm64`
 
 ### Added

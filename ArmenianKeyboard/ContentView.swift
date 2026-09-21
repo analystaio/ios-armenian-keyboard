@@ -82,7 +82,18 @@ struct ContentView: View {
             setupCard
 
             if let hint = setup.hint {
-                SectionFootnote(hint)
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(hint)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                        .fixedSize(horizontal: false, vertical: true)
+
+                    Button("Open Settings", action: openSettings)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundColor(AppTheme.accentTop)
+                }
+                .padding(.horizontal, 20)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
     }
@@ -228,24 +239,14 @@ struct ContentView: View {
     // MARK: - Footer
 
     private var footer: some View {
-        VStack(spacing: 10) {
-            Button {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url)
-                }
-            } label: {
-                HStack(spacing: 8) {
-                    Image(systemName: "gear")
-                    Text("Open Keyboard Settings")
-                }
-            }
-            .buttonStyle(PrimaryButtonStyle())
-            .padding(.horizontal, 16)
+        Text(Bundle.main.versionSummary)
+            .font(.caption)
+            .foregroundColor(Color(UIColor.tertiaryLabel))
+    }
 
-            Text(Bundle.main.versionSummary)
-                .font(.caption)
-                .foregroundColor(Color(UIColor.tertiaryLabel))
-                .padding(.top, 4)
+    private func openSettings() {
+        if let url = URL(string: UIApplication.openSettingsURLString) {
+            UIApplication.shared.open(url)
         }
     }
 }
@@ -335,7 +336,7 @@ enum SetupState {
     /// means Full Access is still off.
     var hint: String? {
         self == .added
-            ? "Word suggestions and the dialect setting need Allow Full Access, under Settings → General → Keyboard → Keyboards → Armenian."
+            ? "Word suggestions and the dialect setting need Allow Full Access, under Keyboards in this app's settings."
             : nil
     }
 }
