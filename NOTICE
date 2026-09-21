@@ -20,8 +20,7 @@ Bundled language data is licensed separately from the source code:
 
   ArmenianKeyboardExtension/armenian_ngram.json
   ArmenianKeyboardExtension/ArmenianDictionary.swift
-    Eastern Armenian data compiled by Analysta from publicly available
-    Armenian-language transcripts.
+    Eastern Armenian data compiled by Analysta.
 
   ArmenianKeyboardExtension/emoji.json
     Emoji list generated from Unicode's emoji-test.txt, licensed under

@@ -112,45 +112,7 @@ The suggestion bar shows up to three predictions and uses two modes:
 
 Words you type and accept are learned on the device and ranked higher in future suggestions.
 
-## Customization
-
-### Adding More Words
-
-Edit `ArmenianDictionary.swift` to add Eastern Armenian words:
-
-```swift
-static let commonWords: [(String, Int)] = [
-    ("yourword", 70),  // word, frequency (1-100)
-    // ... more words
-]
-```
-
-### Modifying the Layout
-
-Edit `ArmenianKeyboardLayout.swift` to change key positions:
-
-```swift
-let letterRows: [[String]] = [
-    ["է", "թ", "փ", /* ... */],
-    // ... more rows
-]
-```
-
-### Styling
-
-Modify `ArmenianKeyboardView.swift` and `KeyboardColors.swift` to customize colors, sizes, and animations.
-
-## Technical Details
-
-### Architecture
-
-- UIKit for the keyboard extension
-- SwiftUI for the container app
-- Trie and sorted-array lookups for prefix completion
-- N-gram model loaded from the extension bundle for next-word prediction
-- Shared app group for settings and learned words
-
-### Privacy
+## Privacy
 
 - No network requests
 - All data stored locally on the device
@@ -161,7 +123,7 @@ The privacy policy is in `docs/privacy.html`.
 
 ## Data and Credits
 
-The Western Armenian word list is derived from the Nayiri Armenian Lexicon, © Serouj Ourishian, licensed under CC BY 4.0. The Western n-gram model is trained on the Western Armenian Wikipedia and the UD Western Armenian ArmTDP treebank, both CC BY-SA 4.0. The Eastern n-gram model is trained on Armenian YouTube captions.
+The Western Armenian word list is derived from the Nayiri Armenian Lexicon, © Serouj Ourishian, licensed under CC BY 4.0. The Western n-gram model is trained on the Western Armenian Wikipedia and the UD Western Armenian ArmTDP treebank, both CC BY-SA 4.0.
 
 ## License
 
@@ -169,12 +131,5 @@ The source code is licensed under the GNU General Public License v3.0 or later. 
 
 Bundled language data (word lists and n-gram models) is licensed separately under Creative Commons and other terms. See `NOTICE` for the sources and their licenses.
 
-Analysta holds the copyright and distributes the app on the App Store under Apple's terms. By submitting a contribution you agree that Analysta may distribute it as part of the App Store build in addition to the GPL-licensed source.
+The source is published for transparency so anyone can verify what the keyboard does with typed text. The project is not accepting contributions.
 
-## Support
-
-For issues or questions:
-- Check Xcode build errors
-- Ensure your device is on iOS 15 or later
-- Verify signing and capabilities are configured
-- Try cleaning the build folder (Shift+Cmd+K)
