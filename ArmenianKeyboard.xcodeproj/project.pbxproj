@@ -550,7 +550,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -565,7 +565,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -581,7 +581,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -596,7 +596,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -609,7 +609,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ArmenianKeyboardExtension/Info.plist;
@@ -619,7 +619,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.Extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -633,7 +633,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = ArmenianKeyboardExtension/Info.plist;
@@ -643,7 +643,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.Extension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -657,7 +657,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "ArmenianKeyboardExtension/Info-Western.plist";
@@ -667,7 +667,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.WesternExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -681,7 +681,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = "ArmenianKeyboardExtension/Info-Western.plist";
@@ -691,7 +691,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.3.0;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = io.analysta.ArmenianKeyboard.WesternExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
