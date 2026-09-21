@@ -1,15 +1,18 @@
 # Armenian Keyboard for iOS
 
-A custom iOS keyboard extension that provides Armenian (հայերեն) typing with QWERTY layout and intelligent word suggestions.
+A custom iOS keyboard extension for typing Armenian (հայերեն) with a standard Armenian layout and a word suggestion bar. It supports Eastern and Western Armenian and is published on the App Store by Analysta.
 
 ## Features
 
-- ✨ **System-wide keyboard** - Works in all iOS apps
-- ⌨️ **QWERTY-based layout** - Standard Armenian character mapping
-- 🤖 **Smart word suggestions** - Predictive text with 250+ common Armenian words
-- 🎨 **Native iOS design** - Matches the built-in keyboard appearance
-- 🔒 **Privacy-focused** - All processing happens on your device
-- 📱 **iOS 15+ support** - Compatible with modern iOS versions
+- System-wide keyboard that works in all iOS apps
+- Standard Eastern Armenian phonetic layout with a numbers and punctuation layer
+- Word completion while typing and next-word prediction after a space
+- Eastern and Western Armenian dialects, selected in the container app
+- On-device learning of the words you type and accept
+- Emoji keyboard
+- Native iOS appearance with light and dark mode support
+- All processing happens on the device; no network access
+- iOS 15 and later
 
 ## Installation
 
@@ -31,73 +34,89 @@ A custom iOS keyboard extension that provides Armenian (հայերեն) typing w
    - Select both targets (ArmenianKeyboard and ArmenianKeyboardExtension)
    - Under "Signing & Capabilities", select your team
 
-3. Update the bundle identifiers if needed:
-   - Main app: `com.yourcompany.ArmenianKeyboard`
-   - Extension: `com.yourcompany.ArmenianKeyboard.Extension`
+3. Update the bundle identifiers and app group if you are building your own copy:
+   - Main app: `io.analysta.ArmenianKeyboard`
+   - Extension: `io.analysta.ArmenianKeyboard.Extension`
 
-4. Build and run on your device (keyboard extensions don't work in simulator for full testing)
+4. Build and run on a physical device. Keyboard extensions cannot be fully tested in the simulator.
 
 ### Enabling the Keyboard
 
-1. After installing the app, go to **Settings** → **General** → **Keyboard** → **Keyboards**
-2. Tap **Add New Keyboard...**
-3. Select **Armenian** under "Third-Party Keyboards"
-4. (Optional) Enable **Allow Full Access** for word suggestions
-5. To use the keyboard, tap and hold the 🌐 globe icon and select Armenian
+1. After installing the app, go to Settings > General > Keyboard > Keyboards
+2. Tap Add New Keyboard...
+3. Select Armenian under Third-Party Keyboards
+4. To use the keyboard, tap and hold the globe key and select Armenian
+
+The keyboard does not request Full Access. Suggestions and learning work without it.
 
 ## Project Structure
 
 ```
 ArmenianKeyboard/
-├── ArmenianKeyboard/              # Main container app
+├── ArmenianKeyboard/              # Container app (SwiftUI)
 │   ├── ArmenianKeyboardApp.swift  # App entry point
-│   ├── ContentView.swift          # Setup instructions UI
+│   ├── ContentView.swift          # Status and settings
+│   ├── OnboardingView.swift       # Setup instructions
+│   ├── AboutView.swift            # About and credits
 │   └── Info.plist                 # App configuration
 │
-└── ArmenianKeyboardExtension/     # Keyboard extension
-    ├── KeyboardViewController.swift      # Main keyboard controller
-    ├── ArmenianKeyboardLayout.swift      # Key layout definitions
-    ├── ArmenianKeyboardView.swift        # Keyboard UI
-    ├── SuggestionBar.swift               # Word suggestion bar
-    ├── Trie.swift                        # Trie data structure
-    ├── ArmenianWordPredictor.swift       # Prediction logic
-    ├── ArmenianDictionary.swift          # Word dictionary
-    └── Info.plist                        # Extension configuration
+├── ArmenianKeyboardExtension/     # Keyboard extension (UIKit)
+│   ├── KeyboardViewController.swift   # Main keyboard controller
+│   ├── ArmenianKeyboardLayout.swift   # Key layout definitions
+│   ├── ArmenianKeyboardView.swift     # Keyboard UI
+│   ├── EmojiKeyboardView.swift        # Emoji layer
+│   ├── SuggestionBar.swift            # Word suggestion bar
+│   ├── ArmenianWordPredictor.swift    # Prediction logic
+│   ├── NGramPredictor.swift           # Next-word n-gram model
+│   ├── ContextTracker.swift           # Tracks recent words for context
+│   ├── UserLearningStore.swift        # On-device learned words
+│   ├── DialectSettings.swift          # Eastern/Western selection
+│   ├── Trie.swift                     # Prefix lookup (Eastern)
+│   ├── SortedWordList.swift           # Prefix lookup (Western)
+│   ├── ArmenianDictionary.swift       # Eastern word list
+│   ├── armenian_ngram.json            # Eastern n-gram model
+│   ├── western_words.tsv              # Western word list
+│   ├── western_ngram.json             # Western n-gram model
+│   └── Info.plist                     # Extension configuration
+│
+└── docs/                          # Project website and privacy policy
 ```
 
 ## Keyboard Layout
 
-The keyboard uses a standard QWERTY-based Armenian layout:
+The keyboard uses the standard Eastern Armenian phonetic layout:
 
-**Row 1:** ք փ ե ր տ ը ւ ի ո պ
-**Row 2:** ա ս դ ֆ գ հ ջ կ լ
-**Row 3:** զ խ ծ վ բ ն մ շ ղ ճ
+**Row 1:** է թ փ ձ ջ ր չ ճ ժ ծ
+**Row 2:** ք ո ե ռ տ ը ւ ի օ պ
+**Row 3:** ա ս դ ֆ գ հ յ կ լ խ
+**Row 4:** զ ղ ց վ բ ն մ շ
+
+The numbers layer includes Armenian punctuation (։ ՝ ՞ ՜) and the dram sign (֏).
 
 ### Special Keys
 
-- **Shift (⇧)**: Single tap for uppercase, double tap for caps lock
-- **Delete (⌫)**: Delete previous character
-- **Globe (🌐)**: Switch between keyboards
-- **123**: Switch to numbers/symbols
+- **Shift**: Single tap for uppercase, double tap for caps lock
+- **Delete**: Delete previous character
+- **Globe**: Switch between keyboards
+- **123**: Switch to numbers and punctuation
+- **Emoji**: Open the emoji keyboard
 - **Space**: Insert space
 - **Return**: Insert newline
 
 ## Word Suggestions
 
-The keyboard includes 250+ common Armenian words with frequency-based ranking:
+The suggestion bar shows up to three predictions and uses two modes:
 
-- Pronouns: ես, դու, նա, մենք, դուք, նրանք
-- Common verbs: լինել, ունեմ, տալ, ասել, գալ, գնալ
-- Time words: օր, գիշեր, առավոտ, երեկո
-- And many more...
+- **Prefix completion** while typing a word. Eastern Armenian uses a trie built from a dictionary of about 1,500 common words. Western Armenian uses a sorted word list of about 120,000 inflected forms.
+- **Next-word prediction** after a space. A 4-gram model with backoff to 3-gram, 2-gram, and unigram counts, trained on native Armenian text.
 
-The suggestion bar shows up to 3 word predictions as you type, ordered by frequency and relevance.
+Words you type and accept are learned on the device and ranked higher in future suggestions.
 
 ## Customization
 
 ### Adding More Words
 
-Edit `ArmenianDictionary.swift` to add more words:
+Edit `ArmenianDictionary.swift` to add Eastern Armenian words:
 
 ```swift
 static let commonWords: [(String, Int)] = [
@@ -112,72 +131,50 @@ Edit `ArmenianKeyboardLayout.swift` to change key positions:
 
 ```swift
 let letterRows: [[String]] = [
-    ["ք", "փ", "ե", /* ... */],
+    ["է", "թ", "փ", /* ... */],
     // ... more rows
 ]
 ```
 
 ### Styling
 
-Modify `ArmenianKeyboardView.swift` to customize colors, sizes, and animations.
+Modify `ArmenianKeyboardView.swift` and `KeyboardColors.swift` to customize colors, sizes, and animations.
 
 ## Technical Details
 
 ### Architecture
 
-- **UIKit** for keyboard extension (better performance and reliability)
-- **SwiftUI** for main app UI
-- **Trie data structure** for efficient prefix-based word lookups
-- **Frequency-based ranking** for relevant suggestions
+- UIKit for the keyboard extension
+- SwiftUI for the container app
+- Trie and sorted-array lookups for prefix completion
+- N-gram model loaded from the extension bundle for next-word prediction
+- Shared app group for settings and learned words
 
 ### Privacy
 
 - No network requests
-- All data stored locally
+- All data stored locally on the device
 - No keystroke logging
-- Optional "Full Access" only for word suggestions
+- Full Access is not requested
 
-### Performance
+The privacy policy is in `docs/privacy.html`.
 
-- Lazy-loaded dictionary
-- Optimized Trie for O(m) lookup time (m = prefix length)
-- Efficient UI updates with minimal redraws
+## Data and Credits
 
-## Known Limitations
-
-- Keyboard extensions have memory constraints (~48MB)
-- Some iOS apps may restrict third-party keyboards
-- Autocorrect is not implemented (shows suggestions only)
-
-## Future Improvements
-
-- [ ] Add Western Armenian layout option
-- [ ] Implement autocorrect
-- [ ] Add more words to dictionary (expand to 5000+)
-- [ ] Support for Armenian punctuation shortcuts
-- [ ] Themes and customization options
-- [ ] Learn from user typing patterns
-
-## Contributing
-
-Feel free to contribute by:
-- Adding more Armenian words to the dictionary
-- Improving the UI/UX
-- Fixing bugs
-- Adding new features
+The Western Armenian word list is derived from the Nayiri Armenian Lexicon, © Serouj Ourishian, licensed under CC BY 4.0. The Western n-gram model is trained on the Western Armenian Wikipedia and the UD Western Armenian ArmTDP treebank, both CC BY-SA 4.0. The Eastern n-gram model is trained on Armenian YouTube captions.
 
 ## License
 
-This project is provided as-is for educational and personal use.
+The source code is licensed under the GNU General Public License v3.0 or later. See `LICENSE` for the full text.
+
+Bundled language data (word lists and n-gram models) is licensed separately under Creative Commons and other terms. See `NOTICE` for the sources and their licenses.
+
+Analysta holds the copyright and distributes the app on the App Store under Apple's terms. By submitting a contribution you agree that Analysta may distribute it as part of the App Store build in addition to the GPL-licensed source.
 
 ## Support
 
 For issues or questions:
 - Check Xcode build errors
-- Ensure your device is iOS 15+
-- Verify signing & capabilities are configured
+- Ensure your device is on iOS 15 or later
+- Verify signing and capabilities are configured
 - Try cleaning the build folder (Shift+Cmd+K)
-
----
-
-**Հաջողություն!** (Good luck!)

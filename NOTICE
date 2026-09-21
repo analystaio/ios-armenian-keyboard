@@ -1,0 +1,28 @@
+Armenian Keyboard for iOS
+Copyright (C) 2026 Analysta
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. See LICENSE for the full text.
+
+Bundled language data is licensed separately from the source code:
+
+  ArmenianKeyboardExtension/western_words.tsv
+    Derived from the Nayiri Armenian Lexicon, (c) Serouj Ourishian,
+    https://nayiri.com. Licensed under CC BY 4.0
+    (https://creativecommons.org/licenses/by/4.0/).
+
+  ArmenianKeyboardExtension/western_ngram.json
+    Trained on the Western Armenian Wikipedia (hywwiki) and the
+    UD_Western_Armenian-ArmTDP treebank. Both sources are licensed under
+    CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0/).
+
+  ArmenianKeyboardExtension/armenian_ngram.json
+  ArmenianKeyboardExtension/ArmenianDictionary.swift
+    Eastern Armenian data compiled by Analysta from publicly available
+    Armenian-language transcripts.
+
+  ArmenianKeyboardExtension/emoji.json
+    Emoji list generated from Unicode's emoji-test.txt, licensed under
+    the Unicode License (https://www.unicode.org/license.txt).
