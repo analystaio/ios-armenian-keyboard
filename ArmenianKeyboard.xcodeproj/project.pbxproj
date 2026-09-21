@@ -28,6 +28,13 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */ = {isa = PBXBuild
 		NG0000010000000000000001 /* armenian_ngram.json in Resources */ = {isa = PBXBuildFile; fileRef = NG0000020000000000000001 /* armenian_ngram.json */; };
 		PV0000010000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PV0000020000000000000001 /* PrivacyInfo.xcprivacy */; };
 		PV0000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = PV0000040000000000000001 /* PrivacyInfo.xcprivacy */; };
+		DS0000010000000000000001 /* DialectSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DS0000020000000000000001 /* DialectSettings.swift */; };
+		DS0000030000000000000001 /* DialectSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = DS0000020000000000000001 /* DialectSettings.swift */; };
+		UL0000010000000000000001 /* UserLearningStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = UL0000020000000000000001 /* UserLearningStore.swift */; };
+		UL0000030000000000000001 /* UserLearningStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = UL0000020000000000000001 /* UserLearningStore.swift */; };
+		SW0000010000000000000001 /* SortedWordList.swift in Sources */ = {isa = PBXBuildFile; fileRef = SW0000020000000000000001 /* SortedWordList.swift */; };
+		WW0000010000000000000001 /* western_words.tsv in Resources */ = {isa = PBXBuildFile; fileRef = WW0000020000000000000001 /* western_words.tsv */; };
+		WN0000010000000000000001 /* western_ngram.json in Resources */ = {isa = PBXBuildFile; fileRef = WN0000020000000000000001 /* western_ngram.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +86,13 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 		NG0000020000000000000001 /* armenian_ngram.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = armenian_ngram.json; sourceTree = "<group>"; };
 		PV0000020000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		PV0000040000000000000001 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		DS0000020000000000000001 /* DialectSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DialectSettings.swift; sourceTree = "<group>"; };
+		UL0000020000000000000001 /* UserLearningStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserLearningStore.swift; sourceTree = "<group>"; };
+		SW0000020000000000000001 /* SortedWordList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortedWordList.swift; sourceTree = "<group>"; };
+		WW0000020000000000000001 /* western_words.tsv */ = {isa = PBXFileReference; lastKnownFileType = text; path = western_words.tsv; sourceTree = "<group>"; };
+		WN0000020000000000000001 /* western_ngram.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = western_ngram.json; sourceTree = "<group>"; };
+		EN0000020000000000000001 /* ArmenianKeyboard.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ArmenianKeyboard.entitlements; sourceTree = "<group>"; };
+		EN0000040000000000000001 /* ArmenianKeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ArmenianKeyboardExtension.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +130,7 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 				AA0000ASSETS0000000000001 /* Assets.xcassets */,
 				AA0000060000000000000001 /* Info.plist */,
 				PV0000020000000000000001 /* PrivacyInfo.xcprivacy */,
+				EN0000020000000000000001 /* ArmenianKeyboard.entitlements */,
 			);
 			path = ArmenianKeyboard;
 			sourceTree = "<group>";
@@ -136,10 +151,16 @@ KC0000020000000000000001 /* KeyboardColors.swift */ = {isa = PBXFileReference; l
 KC0000020000000000000001 /* KeyboardColors.swift */,
 				EM0000020000000000000001 /* EmojiData.swift */,
 				EM0000040000000000000001 /* EmojiKeyboardView.swift */,
+				DS0000020000000000000001 /* DialectSettings.swift */,
+				UL0000020000000000000001 /* UserLearningStore.swift */,
+				SW0000020000000000000001 /* SortedWordList.swift */,
 				NG0000020000000000000001 /* armenian_ngram.json */,
+				WN0000020000000000000001 /* western_ngram.json */,
+				WW0000020000000000000001 /* western_words.tsv */,
 				EM0000060000000000000001 /* emoji.json */,
 				AA0000310000000000000001 /* Info.plist */,
 				PV0000040000000000000001 /* PrivacyInfo.xcprivacy */,
+				EN0000040000000000000001 /* ArmenianKeyboardExtension.entitlements */,
 			);
 			path = ArmenianKeyboardExtension;
 			sourceTree = "<group>";
@@ -245,6 +266,8 @@ KC0000020000000000000001 /* KeyboardColors.swift */,
 			files = (
 NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 				EM0000050000000000000001 /* emoji.json in Resources */,
+				WN0000010000000000000001 /* western_ngram.json in Resources */,
+				WW0000010000000000000001 /* western_words.tsv in Resources */,
 				PV0000030000000000000001 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -258,6 +281,8 @@ NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 			files = (
 				AA0000010000000000000001 /* ArmenianKeyboardApp.swift in Sources */,
 				AA0000030000000000000001 /* ContentView.swift in Sources */,
+				DS0000030000000000000001 /* DialectSettings.swift in Sources */,
+				UL0000030000000000000001 /* UserLearningStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -278,6 +303,9 @@ NG0000010000000000000001 /* armenian_ngram.json in Resources */,
 KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				EM0000010000000000000001 /* EmojiData.swift in Sources */,
 				EM0000030000000000000001 /* EmojiKeyboardView.swift in Sources */,
+				DS0000010000000000000001 /* DialectSettings.swift in Sources */,
+				UL0000010000000000000001 /* UserLearningStore.swift in Sources */,
+				SW0000010000000000000001 /* SortedWordList.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -422,6 +450,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboard/ArmenianKeyboard.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboard/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -453,6 +482,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
+				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboard/ArmenianKeyboard.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboard/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -480,6 +510,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
+				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboardExtension/ArmenianKeyboardExtension.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -504,6 +535,7 @@ KC0000010000000000000001 /* KeyboardColors.swift in Sources */,
 				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_TEAM = ZSF527R2M3;
 				GENERATE_INFOPLIST_FILE = NO;
+				CODE_SIGN_ENTITLEMENTS = ArmenianKeyboardExtension/ArmenianKeyboardExtension.entitlements;
 				INFOPLIST_FILE = ArmenianKeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (

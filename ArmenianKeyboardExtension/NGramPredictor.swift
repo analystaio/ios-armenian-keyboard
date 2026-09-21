@@ -10,6 +10,9 @@ import Foundation
 
 class NGramPredictor {
 
+    let dialect: ArmenianDialect
+    private let learning: UserLearningStore
+
     private var fourgram: [String: [String]] = [:]  // "w1 w2 w3" -> [next words]
     private var trigram:  [String: [String]] = [:]  // "w1 w2"    -> [next words]
     private var bigram:   [String: [String]] = [:]  // "w1"       -> [next words]
@@ -18,13 +21,16 @@ class NGramPredictor {
     /// Called on main thread once the model finishes loading
     var onReady: (() -> Void)?
 
-    init() {
+    init(dialect: ArmenianDialect, learning: UserLearningStore) {
+        self.dialect = dialect
+        self.learning = learning
         loadModelAsync()
     }
 
     private func loadModelAsync() {
+        let resource = dialect.ngramResource
         DispatchQueue.global(qos: .userInitiated).async { [weak self] in
-            guard let url = Bundle.main.url(forResource: "armenian_ngram", withExtension: "json"),
+            guard let url = Bundle.main.url(forResource: resource, withExtension: "json"),
                   let data = try? Data(contentsOf: url),
                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
             else {
@@ -52,6 +58,9 @@ class NGramPredictor {
     // բարեվ in the suggestion bar instead of բարեւ.
     private func normalize(_ s: String) -> String {
         return s.replacingOccurrences(of: "\u{0587}", with: "\u{0565}\u{0582}")
+            .replacingOccurrences(of: "'", with: "\u{055A}")      // Western կ՚ apostrophe
+            .replacingOccurrences(of: "\u{2019}", with: "\u{055A}")
+            .trimmingCharacters(in: .punctuationCharacters)       // "բայց," → "բայց"
     }
 
     /// Predicts next words given recent context words, with backoff.
@@ -60,8 +69,24 @@ class NGramPredictor {
     ///   - limit: Max suggestions to return
     func predictNext(context: [String], limit: Int = 3) -> [String] {
         guard isReady else { return [] }
-        let words = context.map { normalize($0).lowercased().trimmingCharacters(in: .whitespacesAndNewlines) }
+        let words = context.map { normalize($0.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)) }
                            .filter { !$0.isEmpty }
+
+        // What this user actually types after the last word comes first
+        var results: [String] = []
+        if let last = words.last {
+            results = learning.nextWords(after: last, limit: limit)
+        }
+        if results.count >= limit { return results }
+
+        let model = modelPredictions(words, limit: limit)
+        for w in model where !results.contains(w) && results.count < limit {
+            results.append(w)
+        }
+        return results
+    }
+
+    private func modelPredictions(_ words: [String], limit: Int) -> [String] {
 
         // Try 4-gram (3-word context)
         if words.count >= 3 {

@@ -40,6 +40,11 @@ class Trie {
 
     // Find words with given prefix
     func findWordsWithPrefix(_ prefix: String, limit: Int = 10) -> [String] {
+        return findScoredWordsWithPrefix(prefix, limit: limit).map { $0.word }
+    }
+
+    // Same, keeping the frequency so callers can re-rank
+    func findScoredWordsWithPrefix(_ prefix: String, limit: Int = 10) -> [(word: String, frequency: Int)] {
         guard !prefix.isEmpty else { return [] }
 
         let lowercasedPrefix = prefix.lowercased()
@@ -51,10 +56,9 @@ class Trie {
         findAllWords(from: prefixNode, prefix: lowercasedPrefix, results: &results)
 
         // Sort by frequency (descending) and return top results
-        return results
+        return Array(results
             .sorted { $0.frequency > $1.frequency }
-            .prefix(limit)
-            .map { $0.word }
+            .prefix(limit))
     }
 
     // Helper: Find node for a given prefix

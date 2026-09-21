@@ -33,8 +33,12 @@ class KeyboardViewController: UIInputViewController {
     private var keyboardView: ArmenianKeyboardView!
     private var suggestionBar: SuggestionBar!
     private let armenianLayout = ArmenianKeyboardLayout()
-    private let wordPredictor = ArmenianWordPredictor()
-    private let ngramPredictor = NGramPredictor()
+    /// Set in the container app; the layout is identical for both dialects,
+    /// only the predictors and learned words differ.
+    private var dialect = DialectSettings.dialect
+    private var learning: UserLearningStore
+    private var wordPredictor: ArmenianWordPredictor
+    private var ngramPredictor: NGramPredictor
     private let contextTracker = ContextTracker()
     /// Renders the real system keyboard backdrop rather than a colour approximating
     /// it. The backdrop is translucent, so any fixed hex only matches the one host
@@ -48,6 +52,24 @@ class KeyboardViewController: UIInputViewController {
     private var isNumbersMode = false
 
     // MARK: - Lifecycle
+    required init?(coder: NSCoder) {
+        let d = DialectSettings.dialect
+        let l = UserLearningStore(dialect: d)
+        learning = l
+        wordPredictor = ArmenianWordPredictor(dialect: d, learning: l)
+        ngramPredictor = NGramPredictor(dialect: d, learning: l)
+        super.init(coder: coder)
+    }
+
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        let d = DialectSettings.dialect
+        let l = UserLearningStore(dialect: d)
+        learning = l
+        wordPredictor = ArmenianWordPredictor(dialect: d, learning: l)
+        ngramPredictor = NGramPredictor(dialect: d, learning: l)
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupKeyboard()
@@ -55,9 +77,38 @@ class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        reloadPredictorsIfDialectChanged()
         updateKeyboardAppearance()
         checkAutoCapitalization()
         updateSuggestions()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        learning.flush()
+    }
+
+    // MARK: - Dialect
+    private func reloadPredictorsIfDialectChanged() {
+        let current = DialectSettings.dialect
+        guard current != dialect else { return }
+        learning.flush()
+        dialect = current
+        learning = UserLearningStore(dialect: current)
+        wordPredictor = ArmenianWordPredictor(dialect: current, learning: learning)
+        ngramPredictor = NGramPredictor(dialect: current, learning: learning)
+        wirePredictorCallbacks()
+        contextTracker.clear()
+    }
+
+    private func wirePredictorCallbacks() {
+        // Refresh suggestions once an asynchronously loaded model finishes
+        ngramPredictor.onReady = { [weak self] in
+            self?.updateSuggestions()
+        }
+        wordPredictor.onReady = { [weak self] in
+            self?.updateSuggestions()
+        }
     }
 
     override func textWillChange(_ textInput: UITextInput?) {
@@ -125,10 +176,7 @@ class KeyboardViewController: UIInputViewController {
             emojiView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
-        // Refresh suggestions once n-gram model finishes loading
-        ngramPredictor.onReady = { [weak self] in
-            self?.updateSuggestions()
-        }
+        wirePredictorCallbacks()
     }
 
     // MARK: - Emoji Mode
@@ -249,6 +297,7 @@ class KeyboardViewController: UIInputViewController {
         textDocumentProxy.insertText(suggestion)
         textDocumentProxy.insertText(" ")
 
+        learning.recordAccepted(suggestion, after: contextTracker.getLastWord())
         contextTracker.addWord(suggestion)
         updateSuggestions()
         checkAutoCapitalization()
@@ -308,6 +357,7 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
             // Space commits exactly what the user typed. Suggestions are only
             // applied when explicitly tapped in the suggestion bar.
             if let currentWord = getCurrentWord(), !currentWord.isEmpty {
+                learning.recordTyped(currentWord, after: contextTracker.getLastWord())
                 contextTracker.addWord(currentWord)
             }
 

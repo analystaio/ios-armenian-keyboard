@@ -8,6 +8,10 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var dialect: ArmenianDialect = DialectSettings.dialect
+    @State private var showResetConfirmation = false
+    @State private var didReset = false
+
     var body: some View {
         NavigationView {
             ScrollView {
@@ -74,6 +78,52 @@ struct ContentView: View {
                     Divider()
                         .padding(.vertical, 10)
 
+                    // Dialect
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Dialect")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        Text("The keys are the same for both. This changes which words and phrases the suggestion bar predicts.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+
+                        Picker("Dialect", selection: $dialect) {
+                            ForEach(ArmenianDialect.allCases) { d in
+                                Text(d.nativeName).tag(d)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+                        .onChange(of: dialect) { newValue in
+                            DialectSettings.dialect = newValue
+                        }
+
+                        Text("Applies the next time the keyboard opens.")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+
+                        Button(role: .destructive) {
+                            showResetConfirmation = true
+                        } label: {
+                            Text(didReset ? "Learned words cleared" : "Clear learned words")
+                                .font(.subheadline)
+                        }
+                        .disabled(didReset)
+                        .confirmationDialog("Clear learned words?", isPresented: $showResetConfirmation, titleVisibility: .visible) {
+                            Button("Clear", role: .destructive) {
+                                UserLearningStore.resetAll()
+                                didReset = true
+                            }
+                            Button("Cancel", role: .cancel) {}
+                        } message: {
+                            Text("The keyboard learns the words and phrases you type to rank suggestions. This forgets them for both dialects.")
+                        }
+                    }
+                    .padding(.horizontal)
+
+                    Divider()
+                        .padding(.vertical, 10)
+
                     // Features
                     VStack(alignment: .leading, spacing: 16) {
                         Text("Features")
@@ -84,6 +134,24 @@ struct ContentView: View {
                         FeatureRow(icon: "text.bubble", title: "Word Suggestions", description: "Smart word predictions as you type")
                         FeatureRow(icon: "paintbrush", title: "Native Design", description: "Matches iOS keyboard appearance")
                         FeatureRow(icon: "lock.shield", title: "Privacy First", description: "All processing happens on your device")
+                    }
+                    .padding(.horizontal)
+
+                    Divider()
+                        .padding(.vertical, 10)
+
+                    // Acknowledgements
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("Acknowledgements")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+
+                        Text("Western Armenian word forms from the Nayiri Armenian Lexicon © Serouj Ourishian, Nayiri Institute for Armenian Language Computing, licensed under CC BY 4.0 (nayiri.com).")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
+                        Text("Western Armenian phrase statistics derived from the Western Armenian Wikipedia and the UD Western Armenian ArmTDP treebank, both CC BY-SA 4.0.")
+                            .font(.footnote)
+                            .foregroundColor(.secondary)
                     }
                     .padding(.horizontal)
 
