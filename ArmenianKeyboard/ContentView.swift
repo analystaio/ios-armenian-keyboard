@@ -20,6 +20,7 @@ struct ContentView: View {
     @State private var showAbout = false
     @State private var showClearConfirmation = false
     @State private var didClear = false
+    @State private var learnedCount = 0
 
     var body: some View {
         NavigationView {
@@ -66,11 +67,13 @@ struct ContentView: View {
                 showOnboarding = true
             }
             setup = .check()
+            refreshLearnedCount()
         }
         .onChange(of: scenePhase) { phase in
             if phase == .active {
                 setup = .check()
                 dialect = DialectSettings.dialect
+                refreshLearnedCount()
             }
         }
     }
@@ -173,6 +176,7 @@ struct ContentView: View {
             dialect = option
         }
         DialectSettings.dialect = option
+        refreshLearnedCount()
         UISelectionFeedbackGenerator().selectionChanged()
     }
 
@@ -183,21 +187,30 @@ struct ContentView: View {
             SectionHeader("Learning")
 
             Card {
-                HStack(alignment: .top, spacing: 14) {
-                    GlyphTile(symbol: "brain.head.profile", size: 30)
+                NavigationLink(destination: LearnedWordsView(dialect: dialect, count: $learnedCount)) {
+                    HStack(spacing: 14) {
+                        GlyphTile(symbol: "brain.head.profile", size: 30)
 
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Learned words")
-                            .font(.subheadline.weight(.semibold))
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Learned words")
+                                .font(.body)
+                                .foregroundColor(.primary)
 
-                        Text("The keyboard remembers the words and phrases you type, so your own vocabulary rises to the front of the suggestion bar. It stays on this iPhone.")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
+                            Text(learnedSummary)
+                                .font(.footnote)
+                                .foregroundColor(.secondary)
+                        }
+
+                        Spacer(minLength: 0)
+
+                        Image(systemName: "chevron.right")
+                            .font(.caption.weight(.bold))
+                            .foregroundColor(Color(UIColor.tertiaryLabel))
                     }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 14)
                 }
-                .padding(.horizontal, 16)
-                .padding(.vertical, 14)
+                .buttonStyle(PlainRowButtonStyle())
 
                 RowDivider(leadingInset: 0)
 
@@ -227,13 +240,30 @@ struct ContentView: View {
             ) {
                 Button("Clear", role: .destructive) {
                     UserLearningStore.resetAll()
-                    withAnimation { didClear = true }
+                    withAnimation {
+                        didClear = true
+                        learnedCount = 0
+                    }
                 }
                 Button("Cancel", role: .cancel) {}
             } message: {
                 Text("This forgets everything the keyboard has learned from your typing, in both dialects. The built-in dictionary is unaffected.")
             }
+
+            SectionFootnote("The keyboard remembers the words and phrases you type, so your own vocabulary rises to the front of the suggestion bar. It stays on this iPhone.")
         }
+    }
+
+    private var learnedSummary: String {
+        switch learnedCount {
+        case 0: return "Nothing yet in \(dialect.displayName)"
+        case 1: return "1 word in \(dialect.displayName)"
+        default: return "\(learnedCount) words in \(dialect.displayName)"
+        }
+    }
+
+    private func refreshLearnedCount() {
+        learnedCount = UserLearningStore(dialect: dialect).learnedWordCount
     }
 
     // MARK: - Footer

@@ -130,6 +130,40 @@ final class UserLearningStore {
         return Array(out.prefix(limit))
     }
 
+    /// How many distinct words have been learned. Used by the container app.
+    var learnedWordCount: Int {
+        payload.words.count
+    }
+
+    /// Every learned word, most used first, ties broken alphabetically.
+    /// Used by the container app to show what the keyboard has picked up.
+    func allLearnedWords() -> [(word: String, count: Int)] {
+        payload.words
+            .map { (word: $0.key, count: $0.value) }
+            .sorted { $0.count == $1.count ? $0.word < $1.word : $0.count > $1.count }
+    }
+
+    /// Forgets one word: its own count, the pairs it starts and the pairs it
+    /// ends. Written straight through, since the app may be dismissed right
+    /// after. Used by the container app.
+    func forget(_ word: String) {
+        let key = UserLearningStore.normalize(word) ?? word
+        payload.words.removeValue(forKey: key)
+        payload.bigrams.removeValue(forKey: key)
+
+        for (context, nexts) in payload.bigrams where nexts[key] != nil {
+            var remaining = nexts
+            remaining.removeValue(forKey: key)
+            if remaining.isEmpty {
+                payload.bigrams.removeValue(forKey: context)
+            } else {
+                payload.bigrams[context] = remaining
+            }
+        }
+
+        flush()
+    }
+
     /// Words the user has typed after `previous`, most frequent first.
     func nextWords(after previous: String, minCount: Int = 2, limit: Int = 3) -> [String] {
         guard let prev = UserLearningStore.normalize(previous), let nexts = payload.bigrams[prev] else { return [] }
