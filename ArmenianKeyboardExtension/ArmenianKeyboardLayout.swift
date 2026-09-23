@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreGraphics
 
 enum ArmenianLayoutType {
     case eastern
@@ -35,12 +36,20 @@ struct KeyboardKey {
     }
 }
 
+/// Which letters are on the keys. The Latin set is used by the
+/// transliteration keyboards; punctuation and the bottom row are shared.
+enum KeyboardLanguage {
+    case armenian
+    case latin
+}
+
 class ArmenianKeyboardLayout {
+
+    var language: KeyboardLanguage = .armenian
 
     // Armenian QWERTY layout mapping
     // Based on standard Eastern Armenian keyboard layout
-
-    let letterRows: [[String]] = [
+    private let armenianLetterRows: [[String]] = [
         // Row 1 - Standard Eastern Armenian layout
         ["է", "թ", "փ", "ձ", "ջ", "ր", "չ", "ճ", "ժ", "ծ"],
         // Row 2
@@ -50,6 +59,31 @@ class ArmenianKeyboardLayout {
         // Row 4
         ["զ", "ղ", "ց", "վ", "բ", "ն", "մ", "շ"]
     ]
+
+    // Plain QWERTY for typing Armenian phonetically
+    private let latinLetterRows: [[String]] = [
+        ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p"],
+        ["a", "s", "d", "f", "g", "h", "j", "k", "l"],
+        ["z", "x", "c", "v", "b", "n", "m"]
+    ]
+
+    var letterRows: [[String]] {
+        switch language {
+        case .armenian: return armenianLetterRows
+        case .latin: return latinLetterRows
+        }
+    }
+
+    func numberOfRows(numbersMode: Bool) -> Int {
+        return (numbersMode ? numberRows : letterRows).count
+    }
+
+    /// Leading/trailing inset for rows with fewer keys, so the Latin home row
+    /// (9 keys) sits centred like the system keyboard.
+    func sideInset(forRow row: Int, numbersMode: Bool) -> CGFloat {
+        guard !numbersMode, language == .latin, row == 1 else { return 0 }
+        return 18
+    }
 
     let numberRows: [[String]] = [
         // Row 1
@@ -67,9 +101,8 @@ class ArmenianKeyboardLayout {
 
         let rowChars = sourceRows[row]
 
-        // In letter mode: row 3 (4th row) has shift and delete
-        // In numbers mode: row 2 (3rd row) has shift and delete
-        let isLastCharacterRow = numbersMode ? (row == 2) : (row == 3)
+        // The last character row carries shift and delete
+        let isLastCharacterRow = row == sourceRows.count - 1
 
         if isLastCharacterRow {
             var keys: [KeyboardKey] = []
@@ -97,9 +130,10 @@ class ArmenianKeyboardLayout {
     func getBottomRow(numbersMode: Bool = false, showGlobeKey: Bool = true) -> [KeyboardKey] {
         var keys: [KeyboardKey] = []
 
+        let lettersLabel = language == .armenian ? "ԱԲԳ" : "ABC"
         keys.append(KeyboardKey(
             type: .numbers,
-            displayText: numbersMode ? "ԱԲԳ" : "123",
+            displayText: numbersMode ? lettersLabel : "123",
             width: .wide
         ))
 

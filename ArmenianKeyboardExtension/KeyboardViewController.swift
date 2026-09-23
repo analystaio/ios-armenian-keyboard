@@ -33,8 +33,13 @@ class KeyboardViewController: UIInputViewController {
     private var keyboardView: ArmenianKeyboardView!
     private var suggestionBar: SuggestionBar!
     private let armenianLayout = ArmenianKeyboardLayout()
+    /// Armenian keys or Latin keys, fixed per bundle by its Info.plist.
+    private let mode = DialectSettings.mode
     private var learning: UserLearningStore
-    private var wordPredictor: ArmenianWordPredictor
+    /// Completes Armenian words; only the Armenian-key bundles carry a dictionary.
+    private var wordPredictor: ArmenianWordPredictor?
+    /// Turns a Latin-typed word into Armenian; only the Latin-key bundles carry an index.
+    private var transliterationPredictor: TransliterationPredictor?
     private var ngramPredictor: NGramPredictor
     private let contextTracker = ContextTracker()
     /// Renders the real system keyboard backdrop rather than a colour approximating
@@ -53,18 +58,33 @@ class KeyboardViewController: UIInputViewController {
         let d = DialectSettings.dialect
         let l = UserLearningStore(dialect: d)
         learning = l
-        wordPredictor = ArmenianWordPredictor(dialect: d, learning: l)
         ngramPredictor = NGramPredictor(dialect: d, learning: l)
         super.init(coder: coder)
+        makeWordPredictor()
     }
 
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         let d = DialectSettings.dialect
         let l = UserLearningStore(dialect: d)
         learning = l
-        wordPredictor = ArmenianWordPredictor(dialect: d, learning: l)
         ngramPredictor = NGramPredictor(dialect: d, learning: l)
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        makeWordPredictor()
+    }
+
+    private func makeWordPredictor() {
+        switch mode {
+        case .armenian:
+            armenianLayout.language = .armenian
+            wordPredictor = ArmenianWordPredictor(dialect: learning.dialect, learning: learning)
+        case .transliteration:
+            armenianLayout.language = .latin
+            transliterationPredictor = TransliterationPredictor(dialect: learning.dialect, learning: learning)
+        }
+    }
+
+    private static func containsArmenian(_ s: String) -> Bool {
+        s.unicodeScalars.contains { (0x0531...0x058F).contains($0.value) || (0xFB13...0xFB17).contains($0.value) }
     }
 
     override func viewDidLoad() {
@@ -89,7 +109,10 @@ class KeyboardViewController: UIInputViewController {
         ngramPredictor.onReady = { [weak self] in
             self?.updateSuggestions()
         }
-        wordPredictor.onReady = { [weak self] in
+        wordPredictor?.onReady = { [weak self] in
+            self?.updateSuggestions()
+        }
+        transliterationPredictor?.onReady = { [weak self] in
             self?.updateSuggestions()
         }
     }
@@ -247,9 +270,15 @@ class KeyboardViewController: UIInputViewController {
 
         var suggestions: [String] = []
 
-        // Scenario 1: User is typing a word (prefix completion)
+        // Scenario 1: User is typing a word — complete it, or on Latin keys,
+        // offer its Armenian spellings to tap
         if let currentWord = getCurrentWord(), !currentWord.isEmpty {
-            suggestions = wordPredictor.getSuggestions(for: currentWord, limit: 3)
+            switch mode {
+            case .armenian:
+                suggestions = wordPredictor?.getSuggestions(for: currentWord, limit: 3) ?? []
+            case .transliteration:
+                suggestions = transliterationPredictor?.suggestions(for: currentWord, limit: 3) ?? []
+            }
         }
         // Scenario 2: User just finished a word (next word prediction)
         else if contextTracker.getLastWord() != nil {
@@ -280,8 +309,12 @@ class KeyboardViewController: UIInputViewController {
         textDocumentProxy.insertText(suggestion)
         textDocumentProxy.insertText(" ")
 
-        learning.recordAccepted(suggestion, after: contextTracker.getLastWord())
-        contextTracker.addWord(suggestion)
+        // Next-word context and learning are Armenian-only, so a Latin word
+        // left as typed never pollutes them
+        if Self.containsArmenian(suggestion) {
+            learning.recordAccepted(suggestion, after: contextTracker.getLastWord())
+            contextTracker.addWord(suggestion)
+        }
         updateSuggestions()
         checkAutoCapitalization()
     }
@@ -339,7 +372,7 @@ extension KeyboardViewController: ArmenianKeyboardViewDelegate {
         case .space:
             // Space commits exactly what the user typed. Suggestions are only
             // applied when explicitly tapped in the suggestion bar.
-            if let currentWord = getCurrentWord(), !currentWord.isEmpty {
+            if let currentWord = getCurrentWord(), !currentWord.isEmpty, Self.containsArmenian(currentWord) {
                 learning.recordTyped(currentWord, after: contextTracker.getLastWord())
                 contextTracker.addWord(currentWord)
             }

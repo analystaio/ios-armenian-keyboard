@@ -30,7 +30,7 @@ struct AboutView: View {
                     }
                     .padding(.top, 8)
 
-                    Text("An Armenian keyboard for iOS with a suggestion bar that completes the word you are typing and predicts the next one, in Eastern or Western Armenian. Everything runs on your iPhone — the keyboard has no network code and sends nothing anywhere.")
+                    Text("An Armenian keyboard for iOS with a suggestion bar that completes the word you are typing and predicts the next one, in Eastern or Western Armenian, on Armenian keys or Latin keys. Everything runs on your iPhone — the keyboard has no network code and sends nothing anywhere.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)

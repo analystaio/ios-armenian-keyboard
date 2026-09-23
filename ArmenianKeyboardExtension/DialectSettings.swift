@@ -4,9 +4,10 @@
 //
 //  Which dialect a bundle predicts for.
 //
-//  There are two keyboard extensions, one per dialect, and each declares its
-//  own in its Info.plist. They share every line of code and differ only in the
-//  dictionary and n-gram model they carry. This is deliberate: a keyboard
+//  There are four keyboard extensions — Eastern and Western, each with
+//  Armenian keys or Latin keys — and each declares its dialect and key set in
+//  its Info.plist. They share every line of code and differ only in the
+//  dictionary, index and n-gram model they carry. This is deliberate: a keyboard
 //  extension cannot read a setting written by the container app without Full
 //  Access, and asking for Full Access to move one enum across a process
 //  boundary is a bad trade for a keyboard.
@@ -42,19 +43,55 @@ enum ArmenianDialect: String, CaseIterable, Identifiable {
         }
     }
 
-    /// The keyboard extension that carries this dialect.
-    var extensionBundleID: String {
-        switch self {
-        case .eastern: return "io.analysta.ArmenianKeyboard.Extension"
-        case .western: return "io.analysta.ArmenianKeyboard.WesternExtension"
-        }
-    }
+}
+
+/// What the keys are. Armenian keys type Armenian directly; Latin keys type
+/// Armenian phonetically ("barev") and the suggestion bar offers the Armenian
+/// spelling to tap.
+enum KeyboardMode: String, CaseIterable {
+    case armenian
+    case transliteration
+}
+
+/// One keyboard extension: a dialect and a key set. Each is its own bundle
+/// with its own Info.plist, container, and learned words.
+struct KeyboardVariant: Identifiable, Equatable {
+    let dialect: ArmenianDialect
+    let mode: KeyboardMode
+
+    var id: String { "\(dialect.rawValue)-\(mode.rawValue)" }
+
+    static let all: [KeyboardVariant] = [
+        KeyboardVariant(dialect: .eastern, mode: .armenian),
+        KeyboardVariant(dialect: .western, mode: .armenian),
+        KeyboardVariant(dialect: .eastern, mode: .transliteration),
+        KeyboardVariant(dialect: .western, mode: .transliteration),
+    ]
 
     /// What the keyboard is called in Settings → Keyboards.
     var keyboardName: String {
-        switch self {
-        case .eastern: return "Armenian (Eastern)"
-        case .western: return "Armenian (Western)"
+        switch (dialect, mode) {
+        case (.eastern, .armenian): return "Armenian (Eastern)"
+        case (.western, .armenian): return "Armenian (Western)"
+        case (.eastern, .transliteration): return "Armenian (Eastern, Latin keys)"
+        case (.western, .transliteration): return "Armenian (Western, Latin keys)"
+        }
+    }
+
+    var extensionBundleID: String {
+        switch (dialect, mode) {
+        case (.eastern, .armenian): return "io.analysta.ArmenianKeyboard.Extension"
+        case (.western, .armenian): return "io.analysta.ArmenianKeyboard.WesternExtension"
+        case (.eastern, .transliteration): return "io.analysta.ArmenianKeyboard.LatinExtension"
+        case (.western, .transliteration): return "io.analysta.ArmenianKeyboard.WesternLatinExtension"
+        }
+    }
+
+    /// Second line in the app's keyboard list.
+    var detail: String {
+        switch mode {
+        case .armenian: return dialect.nativeName
+        case .transliteration: return "\(dialect.nativeName) · type barev, tap բարեւ"
         }
     }
 }
@@ -67,18 +104,24 @@ enum DialectSettings {
         let raw = Bundle.main.object(forInfoDictionaryKey: "ArmenianDialect") as? String ?? ""
         return ArmenianDialect(rawValue: raw) ?? .eastern
     }()
+
+    /// The key set this bundle was built for. Absent means Armenian keys.
+    static let mode: KeyboardMode = {
+        let raw = Bundle.main.object(forInfoDictionaryKey: "KeyboardMode") as? String ?? ""
+        return KeyboardMode(rawValue: raw) ?? .armenian
+    }()
 }
 
 /// Which keyboards the user has added, as far as the container app can tell.
 /// iOS lists the enabled keyboard bundle IDs in the app's own defaults.
 enum KeyboardPresence {
 
-    static func isAdded(_ dialect: ArmenianDialect) -> Bool {
-        enabledKeyboardIDs.contains(dialect.extensionBundleID)
+    static func isAdded(_ variant: KeyboardVariant) -> Bool {
+        enabledKeyboardIDs.contains(variant.extensionBundleID)
     }
 
-    static var addedDialects: [ArmenianDialect] {
-        ArmenianDialect.allCases.filter(isAdded)
+    static var addedVariants: [KeyboardVariant] {
+        KeyboardVariant.all.filter(isAdded)
     }
 
     private static var enabledKeyboardIDs: [String] {

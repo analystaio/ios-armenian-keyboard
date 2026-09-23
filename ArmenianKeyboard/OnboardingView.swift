@@ -129,10 +129,12 @@ struct OnboardingPage {
         OnboardingPage(
             symbol: "character.book.closed",
             title: "Eastern or Western",
-            body: "Two keyboards, one for each dialect. The keys are identical — what differs is the words each one suggests. Add either, or both and switch between them.",
+            body: "A keyboard for each dialect, with Armenian keys or with Latin keys. On Latin keys you type the way you would in a text message — barev — and tap the Armenian spelling in the suggestion bar. Add any, and switch between them.",
             steps: [
                 "Armenian (Eastern) · Արևելահայերեն",
-                "Armenian (Western) · Արեւմտահայերէն"
+                "Armenian (Western) · Արեւմտահայերէն",
+                "Armenian (Eastern, Latin keys) · barev → բարև",
+                "Armenian (Western, Latin keys) · parev → բարեւ"
             ],
             primaryButton: "Continue",
             opensSettings: false
@@ -144,7 +146,7 @@ struct OnboardingPage {
             steps: [
                 "Open Settings → General → Keyboard",
                 "Tap Keyboards, then Add New Keyboard…",
-                "Pick Armenian (Eastern) or Armenian (Western)"
+                "Pick the Armenian keyboards you want"
             ],
             primaryButton: "Open Settings",
             opensSettings: true

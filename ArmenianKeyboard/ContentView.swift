@@ -5,8 +5,8 @@
 //  Home screen: whether the keyboards are set up, and which ones.
 //  Setup lives in OnboardingView; credits live in AboutView.
 //
-//  There is deliberately nothing to configure here. Each dialect is its own
-//  keyboard extension, picked with the globe key, and each learns from your
+//  There is deliberately nothing to configure here. Each dialect and key set
+//  is its own keyboard extension, picked with the globe key, and each learns from your
 //  typing inside its own container — which the app cannot reach without Full
 //  Access, and asking a keyboard's users for Full Access to show a word list
 //  is a bad trade.
@@ -20,7 +20,7 @@ struct ContentView: View {
 
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var added: [ArmenianDialect] = KeyboardPresence.addedDialects
+    @State private var added: [KeyboardVariant] = KeyboardPresence.addedVariants
     @State private var showOnboarding = false
     @State private var showAbout = false
 
@@ -77,7 +77,7 @@ struct ContentView: View {
 
     private func refresh() {
         withAnimation(.easeOut(duration: 0.2)) {
-            added = KeyboardPresence.addedDialects
+            added = KeyboardPresence.addedVariants
         }
     }
 
@@ -98,7 +98,7 @@ struct ContentView: View {
 
                     Text(isSetUp
                          ? "Hold the globe key in any app and pick your Armenian keyboard."
-                         : "Neither Armenian keyboard has been added in Settings yet.")
+                         : "None of the Armenian keyboards has been added in Settings yet.")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -140,16 +140,16 @@ struct ContentView: View {
             SectionHeader("Keyboards")
 
             Card {
-                ForEach(Array(ArmenianDialect.allCases.enumerated()), id: \.element.id) { index, dialect in
+                ForEach(Array(KeyboardVariant.all.enumerated()), id: \.element.id) { index, variant in
                     if index > 0 {
                         RowDivider(leadingInset: 16)
                     }
 
-                    KeyboardRow(dialect: dialect, isAdded: added.contains(dialect))
+                    KeyboardRow(variant: variant, isAdded: added.contains(variant))
                 }
             }
 
-            SectionFootnote("Add either, or both. The keys are the same; each keyboard suggests words in its own dialect and learns what you type, on this iPhone only.")
+            SectionFootnote("Add any of them. The Armenian-key boards share one layout and differ in the words they suggest. The Latin-key boards let you type Armenian the way you would in a text message — barev — and offer the Armenian spelling to tap. Each learns what you type, on this iPhone only.")
         }
     }
 
@@ -165,17 +165,17 @@ struct ContentView: View {
 // MARK: - Keyboard row
 
 private struct KeyboardRow: View {
-    let dialect: ArmenianDialect
+    let variant: KeyboardVariant
     let isAdded: Bool
 
     var body: some View {
         HStack(spacing: 14) {
             VStack(alignment: .leading, spacing: 3) {
-                Text(dialect.displayName)
+                Text(variant.keyboardName)
                     .font(.body)
                     .foregroundColor(.primary)
 
-                Text(dialect.nativeName)
+                Text(variant.detail)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }

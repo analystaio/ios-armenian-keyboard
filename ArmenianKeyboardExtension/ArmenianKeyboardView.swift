@@ -92,18 +92,9 @@ class ArmenianKeyboardView: UIView {
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
         ])
 
-        // Row 1
-        stackView.addArrangedSubview(createRow(0))
-
-        // Row 2
-        stackView.addArrangedSubview(createRow(1))
-
-        // Row 3
-        stackView.addArrangedSubview(createRow(2))
-
-        // Row 4 - Additional letters (only in letter mode, not in numbers mode)
-        if !isNumbersMode {
-            stackView.addArrangedSubview(createRow(3))
+        // Letter or number rows; the count depends on the key set and mode
+        for row in 0..<layout.numberOfRows(numbersMode: isNumbersMode) {
+            stackView.addArrangedSubview(createRow(row))
         }
 
         // Bottom row
@@ -130,10 +121,11 @@ class ArmenianKeyboardView: UIView {
 
         containerView.addSubview(rowView)
 
-        // All rows extend the full width
+        // Rows with fewer keys are inset from the edges, as on the system keyboard
+        let inset = layout.sideInset(forRow: rowIndex, numbersMode: isNumbersMode)
         NSLayoutConstraint.activate([
-            rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+            rowView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: inset),
+            rowView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -inset),
             rowView.topAnchor.constraint(equalTo: containerView.topAnchor),
             rowView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
         ])
@@ -528,7 +520,7 @@ class ArmenianKeyboardView: UIView {
     private func getAllKeys() -> [KeyboardKey] {
         var allKeys: [KeyboardKey] = []
 
-        for i in 0..<4 {
+        for i in 0..<layout.numberOfRows(numbersMode: isNumbersMode) {
             allKeys.append(contentsOf: layout.getKeys(forRow: i, numbersMode: isNumbersMode))
         }
 
